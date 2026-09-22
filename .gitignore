@@ -1,0 +1,17 @@
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Local logs, dependencies, and generated coverage
+*.log
+node_modules/
+coverage/
+.qa/
+
+# Local environment overrides
+.env
+.env.*
+!.env.example
