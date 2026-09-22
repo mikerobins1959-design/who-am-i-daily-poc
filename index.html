@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Play the daily Who Am I? sudden-death guessing game."
+    >
+    <title>Who Am I? Daily</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="js/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to game</a>
+
+    <header class="site-header">
+      <div class="page-shell header-inner">
+        <a class="wordmark" href="./" aria-label="Who Am I? Daily home">
+          <span class="wordmark-title">Who Am I?</span>
+          <span class="wordmark-tag">Daily</span>
+        </a>
+        <p class="game-mode">Sudden Death</p>
+      </div>
+    </header>
+
+    <main id="main-content" class="page-shell">
+      <p id="app-status" class="visually-hidden" aria-live="polite"></p>
+
+      <section id="loading-state" class="state-card loading-state" aria-labelledby="loading-title">
+        <div class="loading-mark" aria-hidden="true"></div>
+        <div>
+          <h1 id="loading-title">Loading today’s puzzle…</h1>
+          <p>Please wait a moment.</p>
+        </div>
+      </section>
+
+      <div class="game-layout">
+        <section id="game-state" class="game-column" aria-labelledby="game-title" hidden>
+          <article class="game-card">
+            <header class="game-header">
+              <div>
+                <p id="puzzle-date" class="eyebrow"></p>
+                <h1 id="game-title">Who am I?</h1>
+              </div>
+              <dl class="score-card" aria-label="Current game position">
+                <div>
+                  <dt>Clue</dt>
+                  <dd id="stage-label">1 of 3</dd>
+                </div>
+                <div>
+                  <dt>Worth</dt>
+                  <dd><span id="score-value">3</span> <span id="score-unit" class="score-unit">pts</span></dd>
+                </div>
+              </dl>
+            </header>
+
+            <ol id="clue-list" class="clue-list" aria-label="Revealed clues">
+              <li id="clue-1" class="clue" hidden></li>
+              <li id="clue-2" class="clue" hidden></li>
+              <li id="clue-3" class="clue" hidden></li>
+            </ol>
+
+            <div class="game-actions">
+              <button id="show-options-button" class="button button-primary" type="button">
+                Request options
+              </button>
+              <button id="next-clue-button" class="button button-secondary" type="button">
+                Reveal next clue
+              </button>
+            </div>
+
+            <fieldset id="answer-panel" class="answer-panel" hidden>
+              <legend>Choose one answer</legend>
+              <p class="answer-note">A wrong answer ends today’s game.</p>
+              <div id="answer-options" class="answer-options"></div>
+            </fieldset>
+
+            <section
+              id="result-panel"
+              class="result-panel"
+              aria-labelledby="result-title"
+              aria-live="polite"
+              tabindex="-1"
+              hidden
+            >
+              <p class="eyebrow">Today’s result</p>
+              <h2 id="result-title"></h2>
+              <p id="result-message"></p>
+            </section>
+          </article>
+        </section>
+
+        <aside id="stats-panel" class="stats-card" aria-labelledby="stats-title" hidden>
+          <h2 id="stats-title">Your stats</h2>
+          <dl class="stats-grid">
+            <div>
+              <dt>Played</dt>
+              <dd id="stat-played">0</dd>
+            </div>
+            <div>
+              <dt>Wins</dt>
+              <dd id="stat-wins">0</dd>
+            </div>
+            <div>
+              <dt>Current streak</dt>
+              <dd id="stat-current-streak">0</dd>
+            </div>
+            <div>
+              <dt>Best streak</dt>
+              <dd id="stat-max-streak">0</dd>
+            </div>
+          </dl>
+
+          <section class="distribution" aria-labelledby="distribution-title">
+            <h3 id="distribution-title">Score distribution</h3>
+            <div id="score-distribution" class="distribution-list">
+              <div id="distribution-0" class="distribution-row">
+                <span class="distribution-label">0 pts</span>
+                <span class="distribution-track"><span class="distribution-bar"></span></span>
+                <span class="distribution-value">0</span>
+              </div>
+              <div id="distribution-3" class="distribution-row">
+                <span class="distribution-label">3 pts</span>
+                <span class="distribution-track"><span class="distribution-bar"></span></span>
+                <span class="distribution-value">0</span>
+              </div>
+              <div id="distribution-2" class="distribution-row">
+                <span class="distribution-label">2 pts</span>
+                <span class="distribution-track"><span class="distribution-bar"></span></span>
+                <span class="distribution-value">0</span>
+              </div>
+              <div id="distribution-1" class="distribution-row">
+                <span class="distribution-label">1 pt</span>
+                <span class="distribution-track"><span class="distribution-bar"></span></span>
+                <span class="distribution-value">0</span>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <section id="missing-state" class="state-card" aria-labelledby="missing-title" hidden>
+          <p class="eyebrow">No puzzle available</p>
+          <h1 id="missing-title">Tomorrow’s puzzle is being prepared</h1>
+          <p>
+            There isn’t a puzzle scheduled for <strong id="missing-date">your local date</strong>.
+            Please check back soon.
+          </p>
+        </section>
+
+        <section id="error-state" class="state-card" aria-labelledby="error-title" hidden>
+          <p class="eyebrow">Unable to load</p>
+          <h1 id="error-title">Today’s game isn’t available</h1>
+          <p id="error-message">Please refresh the page and try again.</p>
+        </section>
+      </div>
+
+      <aside id="storage-warning" class="storage-warning" role="status" hidden>
+        <strong>Your progress can’t be saved.</strong>
+        <span>You can still play, but refreshing may restart the game.</span>
+      </aside>
+    </main>
+
+    <footer class="site-footer">
+      <div class="page-shell">
+        <p>One identity. Three clues. One chance.</p>
+      </div>
+    </footer>
+  </body>
+</html>
