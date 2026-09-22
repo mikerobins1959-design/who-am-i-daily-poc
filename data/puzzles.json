@@ -1,0 +1,22 @@
+[
+  {
+    "date": "2026-09-22",
+    "answer": "Ada Lovelace",
+    "clues": [
+      "I was a 19th-century mathematician often regarded as the world's first computer programmer.",
+      "I wrote an algorithm designed to be carried out by Charles Babbage's Analytical Engine.",
+      "I was the daughter of the famous poet Lord Byron."
+    ],
+    "options": [
+      "Ada Lovelace",
+      "Grace Hopper",
+      "Marie Curie",
+      "Rosalind Franklin",
+      "Emmy Noether",
+      "Katherine Johnson",
+      "Florence Nightingale",
+      "Joan Clarke"
+    ]
+  }
+]
+
