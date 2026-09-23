@@ -5,11 +5,10 @@ Thumbs.db
 .vscode/
 *.swp
 
-# Local logs, dependencies, and generated coverage
-*.log
+# Dependencies, logs, and generated coverage
 node_modules/
 coverage/
-.qa/
+*.log
 
 # Local environment overrides
 .env

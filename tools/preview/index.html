@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Date preview — Who Am I? Daily</title>
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+        background: #e9e7e2;
+        color: #1b1b19;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: flex-end;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #cfccc4;
+        background: #f7f6f3;
+      }
+      .field { display: grid; gap: 0.25rem; }
+      .field span { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #5f5c55; }
+      input, textarea, button { font: inherit; }
+      input, textarea {
+        padding: 0.4rem 0.5rem;
+        border: 1px solid #cfccc4;
+        border-radius: 6px;
+        background: #fff;
+      }
+      textarea { width: min(28rem, 60vw); height: 2.6rem; resize: vertical; font-family: ui-monospace, monospace; font-size: 0.8rem; }
+      button {
+        padding: 0.45rem 0.9rem;
+        border: 1px solid #2f6b55;
+        border-radius: 6px;
+        background: #2f6b55;
+        color: #fff;
+        font-weight: 650;
+        cursor: pointer;
+      }
+      button.secondary { background: #fff; color: #2f6b55; }
+      .hint { flex-basis: 100%; margin: 0; font-size: 0.78rem; color: #5f5c55; }
+      iframe { display: block; width: 100%; height: calc(100vh - 5.9rem); border: 0; background: #fff; }
+    </style>
+  </head>
+  <body>
+    <form class="toolbar" id="controls">
+      <label class="field">
+        <span>Simulated date</span>
+        <input id="preview-date" type="date">
+      </label>
+      <label class="field">
+        <span>Saved state (optional JSON)</span>
+        <textarea id="preview-state" placeholder='{"lastPlayedDate":"…","gameStatus":"WON",…}'></textarea>
+      </label>
+      <button type="submit">Load</button>
+      <button class="secondary" id="preview-reset" type="button">Load with no saved state</button>
+      <p class="hint">
+        Runs the real application in the frame below with its clock fixed to the chosen date.
+        Nothing here is loaded by the game itself — it is a development tool only.
+      </p>
+    </form>
+
+    <iframe id="app-frame" title="Who Am I? Daily preview"></iframe>
+
+    <script type="module">
+      import { PREVIEW_STORAGE_KEY, resolvePreviewDate } from "./storage.js";
+
+      const DATE_KEY = "who-am-i-preview-date";
+
+      const frame = document.querySelector("#app-frame");
+      const dateInput = document.querySelector("#preview-date");
+      const stateInput = document.querySelector("#preview-state");
+
+      // Keep the selected fixture date across toolbar reloads.
+      dateInput.value = resolvePreviewDate(sessionStorage.getItem(DATE_KEY));
+
+      async function load(clearSavedState) {
+        sessionStorage.setItem(DATE_KEY, dateInput.value);
+
+        if (clearSavedState) {
+          localStorage.removeItem(PREVIEW_STORAGE_KEY);
+          stateInput.value = "";
+        } else if (stateInput.value.trim()) {
+          localStorage.setItem(PREVIEW_STORAGE_KEY, stateInput.value.trim());
+        }
+
+        // Serve the real index.html into the frame, injecting the clock shim
+        // ahead of the application module so the fixed date is already in place.
+        // The marker keeps each load unique, so reloading the same date with
+        // different saved state still re-runs the frame.
+        const source = await fetch("/index.html", { cache: "no-store" }).then((r) => r.text());
+        const marker = `<!-- preview ${dateInput.value} ${Date.now()} -->`;
+        frame.srcdoc = source.replace(
+          "<head>",
+          '<head><base href="/">' + marker + '<script type="module" src="/tools/preview/date-shim.js"><' + "/script>",
+        );
+      }
+
+      document.querySelector("#controls").addEventListener("submit", (event) => {
+        event.preventDefault();
+        load(false);
+      });
+      document.querySelector("#preview-reset").addEventListener("click", () => load(true));
+
+      load(false);
+    </script>
+  </body>
+</html>

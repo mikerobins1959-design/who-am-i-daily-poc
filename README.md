@@ -18,19 +18,50 @@ The repository also includes dependency-free tests that run on Node.js 20 or new
 npm test
 ```
 
+## Previewing another date
+
+The game always follows the player's real local date, so a date with no puzzle
+shows the unavailable state. To review any day without changing your system
+clock, serve the project and open:
+
+```text
+http://localhost:8000/tools/preview/index.html
+```
+
+Pick a date to run the real application with its clock fixed to that day. You can
+also paste a saved-state JSON object to resume from a specific situation, which
+is how the streak and refresh behaviour in `TESTING.md` was verified.
+
+The preview keeps its saved state in a separate Local Storage namespace. Opening,
+reloading, seeding, or resetting the preview never changes progress saved by the
+normal game on the same origin. Preview state is preserved across preview reloads;
+the selected fixture date is retained as well. Use **Load with no saved state**
+to reset only the preview. This tool is for development only. It is never loaded
+by the game itself, and nothing in `index.html` references it.
+
 ## Project structure
 
 ```text
 .
-├── index.html          Page structure and accessible game states
-├── css/styles.css      Mobile-first presentation
-├── data/puzzles.json   Daily puzzle content
-├── assets/README.md    Milestone 2 artwork requirement (no asset supplied yet)
-├── js/config.js        Data URL, storage key, and date-check interval
-├── js/game.js          Pure game, date, validation, and state logic
-├── js/app.js           Browser loading, rendering, events, and persistence
-└── tests/game.test.mjs Node built-in tests for the game rules
+├── index.html              Page structure and game states
+├── css/styles.css          Mobile-first presentation
+├── data/puzzles.json       Daily puzzle content
+├── js/
+│   ├── config.js           Data location, storage key, date-check interval
+│   ├── game.js             Rules, scoring, dates, validation, state transitions
+│   ├── session.js          Cross-tab and date-change reconciliation
+│   └── app.js              Loading, rendering, events, persistence
+├── tests/                  Rule, state, and preview-isolation regression tests
+├── tools/preview/          Development tool for viewing any date (see below)
+├── assets/README.md        Milestone 2 artwork requirement (asset not yet supplied)
+└── TESTING.md              What was verified and how to re-run it
 ```
+
+The split matters: `js/game.js` holds the rules as pure functions with no DOM or
+storage access, so the game can be reasoned about and tested independently of the
+page. `js/app.js` owns everything browser-facing — fetching, rendering, events,
+and the Local Storage boundary. Puzzle content stays entirely in
+`data/puzzles.json`, separate from both.
 
 ## Add a daily puzzle
 
@@ -58,7 +89,26 @@ Add one object to the array in `data/puzzles.json`. Dates are matched to the pla
 }
 ```
 
-Each puzzle must contain exactly three non-empty clues and eight distinct, non-empty options. `answer` must exactly match one of those options. The game deliberately checks `selectedOption === puzzle.answer`; it does not normalize case, punctuation, aliases, or spacing. Invalid puzzle data shows an error instead of starting a partial game.
+Each puzzle must contain exactly three non-empty clues and eight distinct,
+non-empty options, and `answer` must exactly match one of those options. The game
+deliberately checks `selectedOption === puzzle.answer` and does not normalise
+case, punctuation, aliases, or spacing.
+
+### Validation when exporting from a spreadsheet
+
+The whole file is validated before the game renders anything, and a problem
+reports the offending entry and the reason rather than starting a partial game:
+
+```text
+Puzzle 3 must have exactly 8 non-empty options.
+Puzzle 5's answer must exactly match one option.
+Puzzle 7 duplicates date 2026-10-02.
+```
+
+This is worth knowing if puzzles are exported from a spreadsheet. Because
+matching is exact by design, a stray trailing space on an answer cell is caught
+here by name, at load, instead of silently producing a puzzle that cannot be
+won. Fix the reported entry and reload.
 
 ## Game rules
 
