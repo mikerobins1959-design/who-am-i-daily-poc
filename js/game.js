@@ -7,6 +7,9 @@ export const GAME_STATUS = Object.freeze({
 const SCORE_BY_CLUE = Object.freeze([3, 2, 1]);
 const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
+// Built from the local calendar fields rather than toISOString(), which would
+// format in UTC and roll the puzzle over at the wrong moment for any player
+// whose offset is behind or ahead of it.
 export function getLocalDateKey(date = new Date()) {
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
     throw new TypeError("A valid Date is required.");
@@ -103,6 +106,8 @@ export function createGameState(dateKey, stats = createDefaultStats(), lastCompl
 
   return {
     lastPlayedDate: dateKey,
+    // Kept separate from lastPlayedDate: once a new day resets the status, only
+    // this field can still say whether the streak has an unbroken run behind it.
     lastCompletedDate,
     gameStatus: GAME_STATUS.IN_PROGRESS,
     currentClueIndex: 0,
@@ -211,6 +216,8 @@ export function isGameComplete(state) {
 }
 
 function cloneState(state) {
+  // States saved before lastCompletedDate existed can still be restored: a
+  // finished game must have finished on the day it was last played.
   const inferredCompletionDate =
     state.gameStatus === GAME_STATUS.WON || state.gameStatus === GAME_STATUS.FAILED
       ? state.lastPlayedDate
@@ -329,6 +336,9 @@ function isValidDateKey(value) {
   );
 }
 
+// Pure arithmetic on an already-resolved calendar key, so UTC is deliberate
+// here: it steps back exactly one calendar day without a daylight-saving
+// transition shortening or lengthening the step. It never reads the clock.
 function getPreviousDateKey(dateKey) {
   const [year, month, day] = dateKey.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));

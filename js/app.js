@@ -12,6 +12,7 @@ import {
   submitGuess,
   validatePuzzles,
 } from "./game.js";
+import { reconcileActionState } from "./session.js";
 
 const elements = {
   appStatus: document.querySelector("#app-status"),
@@ -46,9 +47,11 @@ let puzzle = null;
 let state = null;
 let activeDateKey = "";
 let storageWarning = "";
+let initialized = false;
+let hasUnsavedChanges = false;
 
 elements.showOptionsButton.addEventListener("click", () => {
-  if (!state || isGameComplete(state)) return;
+  if (!prepareForAction()) return;
   state = revealOptions(state);
   saveState();
   renderGame();
@@ -57,11 +60,17 @@ elements.showOptionsButton.addEventListener("click", () => {
 });
 
 elements.nextClueButton.addEventListener("click", () => {
-  if (!state || isGameComplete(state) || state.currentClueIndex >= 2) return;
+  if (!prepareForAction() || state.currentClueIndex >= 2) return;
   state = advanceClue(state);
   saveState();
   renderGame();
   announce(`Clue ${state.currentClueIndex + 1} revealed.`);
+});
+
+window.addEventListener("storage", synchronizeWithEnvironment);
+window.addEventListener("focus", synchronizeWithEnvironment);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) synchronizeWithEnvironment();
 });
 
 initialize();
@@ -82,6 +91,7 @@ async function initialize() {
     }
 
     puzzles = data;
+    initialized = true;
     showToday();
     window.setInterval(checkForDateChange, DATE_CHECK_INTERVAL_MS);
   } catch (error) {
@@ -90,13 +100,17 @@ async function initialize() {
 }
 
 function loadState() {
+  return readStoredState().state;
+}
+
+function readStoredState() {
   try {
     const parsed = parseStoredState(window.localStorage.getItem(STORAGE_KEY));
-    storageWarning = parsed.warning;
-    return parsed.state;
+    if (parsed.warning) storageWarning = parsed.warning;
+    return { state: parsed.state, available: true };
   } catch {
     storageWarning = "Browser storage is unavailable. Progress may be lost when this page closes.";
-    return null;
+    return { state: null, available: false };
   }
 }
 
@@ -105,7 +119,9 @@ function saveState() {
 
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    hasUnsavedChanges = false;
   } catch {
+    hasUnsavedChanges = true;
     storageWarning = "Progress could not be saved. Keep this page open to continue this game.";
   }
 
@@ -130,10 +146,53 @@ function showToday() {
 }
 
 function checkForDateChange() {
-  if (getLocalDateKey() !== activeDateKey) {
+  synchronizeWithEnvironment();
+}
+
+function prepareForAction() {
+  const result = synchronizeWithEnvironment();
+  return Boolean(result?.canAct && puzzle);
+}
+
+function synchronizeWithEnvironment() {
+  if (!initialized) return null;
+
+  const currentDateKey = getLocalDateKey();
+  const persistedState = hasUnsavedChanges ? null : readStoredState().state;
+
+  // A missing-puzzle view has no daily state of its own. It may still receive
+  // updated historical stats from another tab, but must not create a state for
+  // the missing date merely because a focus or storage event fired.
+  if (!puzzle && currentDateKey === activeDateKey) {
+    const changed = persistedState && JSON.stringify(persistedState) !== JSON.stringify(state);
+    if (changed) {
+      state = persistedState;
+      renderMissingPuzzle();
+    } else {
+      renderStorageWarning();
+    }
+    return { state, dateChanged: false, canAct: false };
+  }
+
+  const result = reconcileActionState({
+    activeDateKey,
+    currentDateKey,
+    currentState: state,
+    persistedState,
+  });
+  const stateChanged = JSON.stringify(result.state) !== JSON.stringify(state);
+  state = result.state;
+
+  if (result.dateChanged) {
     showToday();
     announce(`The local date changed to ${activeDateKey}.`);
+    return { state, dateChanged: true, canAct: false };
   }
+
+  if (stateChanged) renderGame();
+  else renderStorageWarning();
+
+  return result;
 }
 
 function renderGame() {
@@ -205,7 +264,7 @@ function renderOptions() {
 }
 
 function makeGuess(selectedOption) {
-  if (!state || !puzzle || isGameComplete(state)) return;
+  if (!prepareForAction()) return;
 
   state = submitGuess(state, puzzle, selectedOption);
   saveState();
@@ -265,9 +324,22 @@ function renderStats(stats) {
   elements.statCurrentStreak.textContent = String(stats.currentStreak);
   elements.statMaxStreak.textContent = String(stats.maxStreak);
 
-  for (const score of [3, 2, 1, 0]) {
-    const value = document.querySelector(`#distribution-${score} .distribution-value`);
-    if (value) value.textContent = String(stats.scoreDistribution[String(score)]);
+  const scores = [3, 2, 1, 0];
+  const largest = Math.max(...scores.map((score) => stats.scoreDistribution[String(score)]));
+
+  for (const score of scores) {
+    const row = document.querySelector(`#distribution-${score}`);
+    if (!row) continue;
+
+    const count = stats.scoreDistribution[String(score)];
+    row.querySelector(".distribution-value").textContent = String(count);
+
+    // Scale each bar against the largest bucket rather than the total, so the
+    // shape of the distribution stays readable at any number of games played.
+    row.querySelector(".distribution-bar").style.setProperty(
+      "--distribution-width",
+      largest === 0 ? "0%" : `${(count / largest) * 100}%`,
+    );
   }
 }
 
