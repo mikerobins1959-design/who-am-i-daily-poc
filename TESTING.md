@@ -28,7 +28,7 @@ and preview helpers without requiring browser automation:
 | Preview isolation | Preview load, reload, reset, enumeration, and failures stay separate from production storage |
 | Preview replay data | Completed-game HUD values are read without changing saved state; malformed data falls back safely |
 | Session reconciliation | Stale-tab actions, cross-tab progress, and local-date changes reconcile before play |
-| Angela intro | Eligibility, per-date session keys, preload failure, reduced motion, live HUD values, focus containment, and restoration |
+| Angela intro | Eligibility, per-date session keys, preload failure, reduced motion, caller-supplied score/streak values, focus containment, and restoration |
 | Spoiler-free sharing | Win/loss copy, unfinished rejection, URL safety, native share, cancellation, direct copy, clipboard, and manual fallback |
 
 ## Manual verification
@@ -72,6 +72,13 @@ seam in `tests/session.test.mjs`. It was not claimed as a wall-clock manual test
 | Manual-copy fallback | Automated — clipboard denial returns the same spoiler-free manual-copy text in `tests/share.test.mjs`; the DOM textarea remains a browser integration path |
 | Native OS share sheet | Client reports it works on a MacBook; browser was not specified. iPhone native sharing remains unverified pending an HTTPS test because LAN HTTP is not a secure context |
 | Responsive M2 HUD/share layout | Pass — visually inspected at 390px mobile and 1280px desktop widths; Angela, the live visor, stage/score/streak HUD, share controls, and ad placeholder remained legible without overflow |
+| Fullscreen intro background | Pass — visually inspected after moving the radial backdrop to the full overlay; the opener filled the viewport without a visible rectangular panel and retained its smooth dissolve |
+
+The intro unit test supplies non-zero values (`score: 3`, `streak: 4`) and
+asserts that both appear unchanged in the visor readout. Production wiring passes
+the current daily `state.score` and locally persisted
+`state.stats.currentStreak`; no cumulative score or remote statistics source is
+assumed. Preview fixtures may seed those same fields to inspect other values.
 
 ### 2026-09-22 full flow
 

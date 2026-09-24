@@ -39,11 +39,17 @@ the image**, never text burned into the PNG. That keeps it crisp and legible at
 every mobile width. The overlay must drive these values from game state:
 
 - `DAILY WHOAMIGAME`
-- `SCORE`
-- `STREAK`
+- `SCORE` — the current daily game's earned `state.score` (zero before a win),
+  not a cumulative score.
+- `STREAK` — the locally persisted `state.stats.currentStreak`.
 
 Because the text is dynamic, the supplied artwork should leave the visor area
 clear of any pre-rendered lettering.
+
+The intro module accepts the numeric values as parameters. A future account or
+statistics service can resolve authoritative values before calling it; service
+access and local/remote conflict policy should remain outside the artwork and
+intro module.
 
 ## Provenance
 

@@ -183,6 +183,24 @@ The live game uses the same score and streak values in its compact HUD. The
 styled advertisement area is an empty placeholder only; it loads no advertising
 account, script, network request, or tracking.
 
+### HUD data contract and future handoff
+
+The intro and compact game HUD read from the same saved daily game state:
+
+- **SCORE** is `state.score`, the points earned in the current daily game. It is
+  `0` while that game is still in progress and becomes `3`, `2`, or `1` after a
+  win. It is not a cumulative or lifetime score.
+- **STREAK** is `state.stats.currentStreak`, the current completed-day winning
+  streak already maintained in Local Storage.
+
+`runDailyIntro` receives these as explicit `score` and `streak` values, so the
+artwork module is independent of where those values come from. No backend is
+needed for the current local statistics. If a later milestone adds accounts or
+cross-device statistics, keep authentication, fetching, validation, and the
+local-versus-remote resolution policy outside `intro.js`; pass the resolved
+values through the existing parameters. A lifetime or cumulative SCORE would
+be a separate product definition and would require updated labels and tests.
+
 Completed games expose spoiler-free **Share result** and **Copy result** actions. The shared text
 contains only the game title, source date, score, and clue-stage outcome. It
 never includes the answer, clue text, answer options, streak, or other history.

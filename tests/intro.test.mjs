@@ -194,7 +194,7 @@ test("runner cancels a late-loading intro after the player has interacted", asyn
   assert.equal(image.src, "");
 });
 
-test("runner shows live HUD values, contains focus, and restores it after dismissal", async () => {
+test("runner renders caller-supplied score and streak, contains focus, and restores it", async () => {
   class LoadedImage {
     set src(_value) {
       queueMicrotask(() => this.onload());

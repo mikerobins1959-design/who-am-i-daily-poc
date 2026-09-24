@@ -674,7 +674,8 @@ main {
   inset: 0;
   place-items: center;
   padding: 1rem;
-  background: rgb(2 5 10 / 96%);
+  background:
+    radial-gradient(ellipse at 50% 40%, #174657 0, #0b2636 38%, #071522 72%, #050d18 100%);
   opacity: 0;
 }
 
@@ -699,7 +700,6 @@ main {
   position: relative;
   width: min(94vw, 36rem, calc(78vh * 0.86));
   aspect-ratio: 1163 / 1352;
-  background: radial-gradient(circle at 50% 38%, #174657, #08121d 63%, transparent 72%);
 }
 
 .angela-intro-image {
