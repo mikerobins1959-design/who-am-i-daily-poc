@@ -9,6 +9,8 @@ Thumbs.db
 node_modules/
 coverage/
 *.log
+.netlify/
+.deploy-preview/
 
 # Local environment overrides
 .env

@@ -18,6 +18,20 @@ The repository also includes dependency-free tests that run on Node.js 20 or new
 npm test
 ```
 
+## Hosted review build
+
+[who-am-i-daily-review.netlify.app](https://who-am-i-daily-review.netlify.app)
+opens the `2026-09-22` sample puzzle directly in a top-level HTTPS page. It uses
+an isolated browser-storage namespace and fixed review date, so it does not
+change the production game's local-date behaviour or saved state. The small
+**Review build · sample puzzle** menu can replay the Angela intro or reset the
+sample game.
+
+This review site is uploaded manually from an ignored local package. Git pushes
+do not deploy it automatically. HTTPS makes the browser's native share API
+available, but native sharing on this hosted build still needs confirmation on
+a compatible device.
+
 ## Previewing another date
 
 The game always follows the player's real local date, so a date with no puzzle
