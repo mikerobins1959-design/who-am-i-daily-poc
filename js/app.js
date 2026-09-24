@@ -205,7 +205,8 @@ function showToday() {
       state?.lastPlayedDate === introDateKey &&
       state.gameStatus === GAME_STATUS.IN_PROGRESS &&
       state.currentClueIndex === 0 &&
-      !state.optionsVisible,
+      !state.optionsVisible &&
+      !document.querySelector("#info-dialog")?.open,
   });
 }
 
@@ -316,8 +317,10 @@ function renderOptions() {
   const complete = isGameComplete(state);
   elements.showOptionsButton.hidden = state.optionsVisible || complete;
   elements.showOptionsButton.disabled = complete;
-  elements.nextClueButton.hidden = complete || state.currentClueIndex >= 2;
-  elements.nextClueButton.disabled = complete;
+  // Revealing the option grid commits the player to this clue. They can still
+  // choose an answer, but cannot turn it into a lower-value later-clue guess.
+  elements.nextClueButton.hidden = complete || state.optionsVisible || state.currentClueIndex >= 2;
+  elements.nextClueButton.disabled = complete || state.optionsVisible;
   elements.answerPanel.hidden = !state.optionsVisible || complete;
   elements.answerOptions.replaceChildren();
 

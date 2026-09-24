@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createGameState, submitGuess } from "../js/game.js";
+import {
+  advanceClue,
+  createGameState,
+  prepareStateForDate,
+  revealOptions,
+  submitGuess,
+} from "../js/game.js";
 import { reconcileActionState } from "../js/session.js";
 
 const puzzle = {
@@ -24,9 +30,9 @@ test("a completed state from another tab blocks a stale tab action", () => {
   assert.deepEqual(result.state, completedState);
 });
 
-test("reconciliation adopts progress saved by another tab", () => {
+test("reconciliation adopts unanswered progress saved by another tab", () => {
   const staleState = createGameState("2026-09-22");
-  const progressedState = { ...staleState, currentClueIndex: 1, optionsVisible: true };
+  const progressedState = revealOptions(advanceClue(staleState));
 
   const result = reconcileActionState({
     activeDateKey: "2026-09-22",
@@ -36,8 +42,8 @@ test("reconciliation adopts progress saved by another tab", () => {
   });
 
   assert.equal(result.canAct, true);
-  assert.equal(result.state.currentClueIndex, 1);
-  assert.equal(result.state.optionsVisible, true);
+  assert.deepEqual(result.state, progressedState);
+  assert.deepEqual(advanceClue(result.state), progressedState);
 });
 
 test("an action is blocked when the local date changed after rendering", () => {
@@ -70,13 +76,12 @@ test("a date change still adopts a just-completed saved state before rollover", 
   assert.deepEqual(result.state, completedState);
 });
 
-test("a stale tab preserves progress another tab made after date rollover", () => {
+test("a stale tab preserves newer progress and statistics after date rollover", () => {
   const staleState = createGameState("2026-09-22");
-  const newDateState = {
-    ...createGameState("2026-09-23", staleState.stats, "2026-09-22"),
-    currentClueIndex: 1,
-    optionsVisible: true,
-  };
+  const completedState = submitGuess(staleState, puzzle, puzzle.answer);
+  const newDateState = revealOptions(
+    advanceClue(prepareStateForDate(completedState, "2026-09-23")),
+  );
 
   const result = reconcileActionState({
     activeDateKey: "2026-09-22",
@@ -87,4 +92,6 @@ test("a stale tab preserves progress another tab made after date rollover", () =
 
   assert.equal(result.dateChanged, true);
   assert.deepEqual(result.state, newDateState);
+  assert.equal(result.state.stats.played, 1);
+  assert.equal(result.state.lastCompletedDate, "2026-09-22");
 });

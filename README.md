@@ -71,12 +71,13 @@ by the game itself, and nothing in `index.html` references it.
 ├── js/
 │   ├── config.js           Data location, storage key, date-check interval
 │   ├── game.js             Rules, scoring, dates, validation, state transitions
+│   ├── info.js             FAQ dialog lifecycle, scroll lock, and focus return
 │   ├── intro.js            Angela opener, preload, motion, and focus behavior
 │   ├── session.js          Cross-tab and date-change reconciliation
 │   ├── share.js            Spoiler-free result text and browser share fallbacks
 │   └── app.js              Loading, rendering, events, persistence
 ├── assets/                 Angela production artwork and source reference
-├── tests/                  Rule, state, intro, share, and preview regressions
+├── tests/                  Rule, state, info, intro, share, and preview regressions
 ├── tools/preview/          Development tool for viewing any date (see below)
 └── TESTING.md              What was verified and how to re-run it
 ```
@@ -137,8 +138,8 @@ won. Fix the reported entry and reload.
 ## Game rules
 
 - Clues 1, 2, and 3 are worth 3, 2, and 1 points respectively.
-- The player may reveal all eight answer options at any clue.
-- Revealing the next clue lowers the score available; clue 3 must be answered.
+- The player may reveal all eight answer options at any clue. Revealing options locks that clue; the player must then submit a guess and cannot reveal later clues.
+- Revealing the next clue lowers the score available; clue 3 must be answered. There is no countdown timer.
 - A correct answer awards the current clue's score and ends the daily game.
 - A wrong answer awards 0 and ends the daily game immediately.
 - A completed game remains locked after a refresh.
@@ -171,7 +172,7 @@ The browser stores one state object under `who-am-i-daily-state` in Local Storag
 }
 ```
 
-`gameStatus` is `IN_PROGRESS`, `WON`, or `FAILED`. `optionsVisible` restores the answer panel after refresh. The additive `lastCompletedDate` field keeps streak calculations accurate after date rollover: a win continues a streak only when the previous completed game was on the prior calendar date. A loss resets the streak, and an abandoned or skipped day causes the next win to start again at 1. Stats change only when an answer completes a game, preventing refreshes from double-counting results.
+`gameStatus` is `IN_PROGRESS`, `WON`, or `FAILED`. An unanswered `IN_PROGRESS` state resumes at the same clue after reload, including a revealed answer grid and its clue lock. The additive `lastCompletedDate` field keeps streak calculations accurate after date rollover: a win continues a streak only when the previous completed game was on the prior calendar date. A loss resets the streak, and an abandoned or skipped day causes the next win to start again at 1. Stats change only when an answer completes a game, preventing refreshes from double-counting results.
 
 Malformed saved data is ignored safely and the player sees a warning. If Local Storage is unavailable or a save fails, the current page remains playable and warns that a refresh may lose progress. State is local to the current browser and can be affected by clearing site data, private browsing, storage restrictions, or changing the device clock. There is no server-side recovery or cross-device sync in this proof of concept.
 
@@ -230,6 +231,13 @@ context. HTTPS is required on a hosted site, while browsers treat `localhost`
 as secure for local development. When testing from a phone over plain LAN HTTP,
 the game falls back to the spoiler-free manual-copy field.
 
+The header information button and footer **FAQ, contact & legal** button open the
+same native dialog. It explains the final scoring, clue-lock, refresh, date, and
+local-statistics rules; provides the support email as a `mailto:` link; and
+includes the client-facing disclaimer. `js/info.js` owns only dialog lifecycle,
+page scroll locking, and focus restoration. It does not read or change game
+state, make network requests, or collect contact details.
+
 ## Scope boundaries
 
 This repository is a fixed-scope proof of concept. Milestone 2 is the current
@@ -239,10 +247,11 @@ deliverable.
 
 - Three-clue Sudden Death loop with 3/2/1 scoring and exact-match answers.
 - Local browser-date puzzle selection from `data/puzzles.json`.
-- Local Storage persistence of daily progress and cumulative statistics.
+- Local Storage persistence of in-progress and completed daily results plus cumulative statistics.
 - Responsive dark HUD treatment and intentional missing-puzzle state.
 - Angela opening artwork with a dynamic score/streak overlay and safe fallbacks.
 - Spoiler-free sharing through native, clipboard, and manual-copy paths.
+- Responsive FAQ, contact, and legal information dialog with keyboard focus return.
 - A styled, empty ad placeholder with no ad-serving integration.
 
 See [`assets/README.md`](assets/README.md) for the Angela production asset and

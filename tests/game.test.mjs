@@ -111,12 +111,12 @@ test("advancing lowers the available score and stops at clue three", () => {
   assert.deepEqual(unchanged, clueThree);
 });
 
-test("requesting options persists while advancing", () => {
+test("requesting options locks the current clue", () => {
   const revealed = revealOptions(createGameState(puzzle.date));
   const advanced = advanceClue(revealed);
 
   assert.equal(revealed.optionsVisible, true);
-  assert.equal(advanced.optionsVisible, true);
+  assert.deepEqual(advanced, revealed);
 });
 
 test("a completed daily game cannot be replayed or counted twice", () => {
@@ -139,13 +139,16 @@ test("legacy issue-schema state restores with safe defaults for additive fields"
   assert.equal(restored.lastCompletedDate, null);
 });
 
-test("a valid saved in-progress game restores its clue and options", () => {
-  const saved = advanceClue(revealOptions(createGameState(puzzle.date)));
+test("a valid saved in-progress game restores its clue, options, and clue lock", () => {
+  const saved = revealOptions(advanceClue(createGameState(puzzle.date)));
   const parsed = parseStoredState(JSON.stringify(saved));
   const restored = prepareStateForDate(parsed.state, puzzle.date);
 
   assert.equal(parsed.warning, "");
   assert.deepEqual(restored, saved);
+  assert.equal(restored.currentClueIndex, 1);
+  assert.equal(restored.optionsVisible, true);
+  assert.deepEqual(advanceClue(restored), restored);
 });
 
 test("malformed or internally inconsistent storage fails safely", () => {
@@ -197,8 +200,14 @@ test("a win continues the streak only after a completion on the previous date", 
 
 test("an abandoned game breaks the streak when a later game is completed", () => {
   const priorWin = submitGuess(createGameState("2026-09-22"), puzzle, puzzle.answer);
-  const inProgress = prepareStateForDate(priorWin, "2026-09-23");
+  const inProgress = revealOptions(advanceClue(prepareStateForDate(priorWin, "2026-09-23")));
   const followingDay = prepareStateForDate(inProgress, "2026-09-24");
+
+  assert.equal(followingDay.currentClueIndex, 0);
+  assert.equal(followingDay.optionsVisible, false);
+  assert.equal(followingDay.stats.played, 1);
+  assert.equal(followingDay.lastCompletedDate, "2026-09-22");
+
   const win = submitGuess(followingDay, puzzle, puzzle.answer);
 
   assert.equal(win.stats.currentStreak, 1);

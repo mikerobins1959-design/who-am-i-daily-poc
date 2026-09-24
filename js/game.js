@@ -170,6 +170,7 @@ export function revealOptions(state) {
 export function advanceClue(state) {
   if (
     state.gameStatus !== GAME_STATUS.IN_PROGRESS ||
+    state.optionsVisible ||
     state.currentClueIndex >= SCORE_BY_CLUE.length - 1
   ) {
     return cloneState(state);

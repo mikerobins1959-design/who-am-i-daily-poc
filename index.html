@@ -10,6 +10,7 @@
     <title>Who Am I? Daily</title>
     <link rel="stylesheet" href="css/styles.css">
     <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/info.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to game</a>
@@ -41,6 +42,104 @@
       <button id="angela-intro-skip" class="intro-skip" type="button">Skip intro</button>
     </section>
 
+    <dialog id="info-dialog" class="info-dialog" aria-labelledby="info-title">
+      <div class="info-dialog-panel">
+        <header class="info-dialog-header">
+          <div>
+            <p class="eyebrow">Game information</p>
+            <h2 id="info-title">How to play</h2>
+          </div>
+          <button
+            id="info-close-button"
+            class="info-close-button"
+            type="button"
+            aria-label="Close game information"
+          >
+            Close
+          </button>
+        </header>
+
+        <div class="info-dialog-body">
+          <section aria-labelledby="faq-title">
+            <h3 id="faq-title">Frequently asked questions</h3>
+
+            <div class="info-faq-list">
+              <article>
+                <h4>How does scoring work?</h4>
+                <p>Clue 1 is worth 3 points, clue 2 is worth 2 points, and clue 3 is worth 1 point.</p>
+              </article>
+
+              <article>
+                <h4>How do I submit an answer?</h4>
+                <p>
+                  Select <strong>Reveal Multiple Choices</strong> to see eight answer options. Revealing
+                  the choices locks the current clue, so you cannot reveal another clue before guessing.
+                  You have one guess, and the selected option must exactly match the puzzle answer. A
+                  wrong answer ends the day with 0 points.
+                </p>
+              </article>
+
+              <article>
+                <h4>Is there a timer?</h4>
+                <p>
+                  No. There is no timer before or after you reveal the choices. You have until local
+                  midnight to submit your answer.
+                </p>
+              </article>
+
+              <article>
+                <h4>When does the puzzle change?</h4>
+                <p>
+                  The daily puzzle changes at midnight according to your browser’s local date. An
+                  unfinished game is not recorded as a completed game or loss when the new day begins.
+                </p>
+              </article>
+
+              <article>
+                <h4>What happens if I refresh or open another tab?</h4>
+                <p>
+                  Your current clue and any revealed choices are preserved in this browser until local
+                  midnight, so you can continue the same daily game.
+                </p>
+              </article>
+
+              <article>
+                <h4>How are streaks and statistics saved?</h4>
+                <p>
+                  A streak counts consecutive daily wins. Your streak and statistics are stored in this
+                  browser on this device. Clearing this site’s browser data resets your game history,
+                  streak, and statistics.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <section aria-labelledby="contact-title">
+            <h3 id="contact-title">Contact</h3>
+            <p>
+              For support, reporting typos, or feedback, please reach out to
+              <a href="mailto:manofempire@yahoo.co.uk">manofempire@yahoo.co.uk</a>.
+            </p>
+          </section>
+
+          <section class="info-legal" aria-labelledby="legal-title">
+            <h3 id="legal-title">Disclaimer</h3>
+            <p>
+              <strong>Trivia Content:</strong> Puzzle content and answers are accurate to the best of
+              our knowledge at the time of publication. Puzzles are created solely for daily
+              entertainment. Krell Enterprises Ltd makes no warranties regarding the completeness or
+              timeliness of historical or biographical data.
+            </p>
+            <p>
+              <strong>Trademarks:</strong> All trademarks, public figure names, and historical
+              references belong to their respective owners. Reference to any individual or organization
+              does not imply endorsement or affiliation.
+            </p>
+          </section>
+        </div>
+      </div>
+    </dialog>
+
     <header class="site-header">
       <div class="page-shell header-inner">
         <div class="brand-lockup">
@@ -50,7 +149,19 @@
             <span class="wordmark-tag">Daily</span>
           </a>
         </div>
-        <p class="game-mode"><span aria-hidden="true">●</span> Sudden Death</p>
+        <div class="header-actions">
+          <p class="game-mode"><span aria-hidden="true">●</span> Sudden Death</p>
+          <button
+            class="info-button"
+            type="button"
+            data-info-open
+            aria-haspopup="dialog"
+            aria-controls="info-dialog"
+            aria-label="Open game information"
+          >
+            <span aria-hidden="true">i</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -98,7 +209,7 @@
 
             <div class="game-actions">
               <button id="show-options-button" class="button button-primary" type="button">
-                Request options
+                Reveal Multiple Choices
               </button>
               <button id="next-clue-button" class="button button-secondary" type="button">
                 Reveal next clue
@@ -217,8 +328,17 @@
     </main>
 
     <footer class="site-footer">
-      <div class="page-shell">
+      <div class="page-shell footer-inner">
         <p>One identity. Three clues. One chance.</p>
+        <button
+          class="footer-info-button"
+          type="button"
+          data-info-open
+          aria-haspopup="dialog"
+          aria-controls="info-dialog"
+        >
+          FAQ, contact &amp; legal
+        </button>
       </div>
     </footer>
   </body>
