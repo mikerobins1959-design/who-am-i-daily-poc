@@ -9,12 +9,11 @@ extraction at `assets/angela-source.png`. Keep this source unchanged.
 Milestone 2.
 
 The supplied source is a 960x1116 RGB PNG with no alpha channel. It has a white
-textured background and visor lettering already baked into its pixels. With the
-user's approval, the built-in image editor produced `angela_host.png` as a new
-1163x1352 RGBA derivative with a transparent background and clear visor. The
-source extraction remains unchanged. This records approval to prepare the
-derivative for implementation; it does not label the artwork as final client
-sign-off.
+textured background and visor lettering already baked into its pixels. An
+approved image-preparation pass produced `angela_host.png` as a new 1163x1352
+RGBA derivative with a transparent background and clear visor. The source
+extraction remains unchanged. The prepared derivative is ready for
+implementation review; it does not represent final client artwork sign-off.
 
 ## Specification (from GitHub issue #1)
 
@@ -55,8 +54,8 @@ intro module.
 
 - Source: `Gemini_Generated_Image_4xkck4xkck4xkck4.pdf`, supplied by the client.
 - Preserved embedded raster: `assets/angela-source.png`.
-- Approved prepared derivative: `assets/angela_host.png`, created with the
-  built-in image editor for the Milestone 2 intro and live HUD overlay.
+- Approved prepared derivative: `assets/angela_host.png`, created for the
+  Milestone 2 intro and live HUD overlay.
 - Approved edit brief: preserve Angela's outlined face, visor, and minimal neck;
   remove the textured background and embedded visor lettering; export a
   transparent PNG with a clear visor for the dynamic HTML/CSS readout.

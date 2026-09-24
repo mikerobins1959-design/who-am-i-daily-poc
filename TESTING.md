@@ -38,9 +38,9 @@ Serve the project (`python3 -m http.server 8000`) and use
 system clock.
 
 The full game-flow walkthrough was performed 2026-09-22 in a Chromium-based
-browser. A focused integration follow-up was performed 2026-09-23 in the Codex
-in-app browser, using the real page and two preview tabs on a separate loopback
-origin.
+browser. A focused integration follow-up was performed 2026-09-23 in a
+Chromium-based desktop preview browser, using the real page and two preview tabs
+on a separate loopback origin.
 
 ### 2026-09-23 integration follow-up
 
