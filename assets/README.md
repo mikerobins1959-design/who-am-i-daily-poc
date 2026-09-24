@@ -1,16 +1,20 @@
-# Assets — Milestone 2 placeholder
+# Assets — Milestone 2
 
-Milestone 1 ships no artwork. This directory exists only to record the asset
-Milestone 2 needs, so the requirement is not lost between milestones.
+The client-supplied PDF has been preserved as a lossless embedded-image
+extraction at `assets/angela-source.png`. Keep this source unchanged.
 
 ## Required asset
 
-`assets/angela_host.png` — **not yet supplied.**
+`assets/angela_host.png` — transparent, text-free intro artwork prepared for
+Milestone 2.
 
-The client has not provided a transparent-background Angela host image, and this
-project deliberately does not fabricate a replacement or edit client-owned
-artwork. Milestone 2 cannot start the opening artwork and dissolve until the
-client supplies this file (or approves an alternative).
+The supplied source is a 960x1116 RGB PNG with no alpha channel. It has a white
+textured background and visor lettering already baked into its pixels. With the
+user's approval, the built-in image editor produced `angela_host.png` as a new
+1163x1352 RGBA derivative with a transparent background and clear visor. The
+source extraction remains unchanged. This records approval to prepare the
+derivative for implementation; it does not label the artwork as final client
+sign-off.
 
 ## Specification (from GitHub issue #1)
 
@@ -25,8 +29,8 @@ Issue #1 is the source of truth. Summarised:
   or cybernetic textures.
 - Visor with a cyan glow.
 
-Delivery format: PNG with a genuine alpha channel, so the visor HUD and the
-dissolve into Clue 1 can composite over the page background.
+Delivery format for `angela_host.png`: PNG with a genuine alpha channel, so the
+visor HUD and dissolve can composite over the page background.
 
 ## Visor HUD — overlay, not baked artwork
 
@@ -41,8 +45,12 @@ every mobile width. The overlay must drive these values from game state:
 Because the text is dynamic, the supplied artwork should leave the visor area
 clear of any pre-rendered lettering.
 
-## Scope note
+## Provenance
 
-The opening artwork, dissolve/fade into Clue 1, dynamic visor HUD, social share
-and styled ad placeholder are all Milestone 2. Nothing in this directory is
-referenced by the Milestone 1 application.
+- Source: `Gemini_Generated_Image_4xkck4xkck4xkck4.pdf`, supplied by the client.
+- Preserved embedded raster: `assets/angela-source.png`.
+- Approved prepared derivative: `assets/angela_host.png`, created with the
+  built-in image editor for the Milestone 2 intro and live HUD overlay.
+- Approved edit brief: preserve Angela's outlined face, visor, and minimal neck;
+  remove the textured background and embedded visor lettering; export a
+  transparent PNG with a clear visor for the dynamic HTML/CSS readout.

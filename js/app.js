@@ -1,4 +1,9 @@
-import { DATE_CHECK_INTERVAL_MS, PUZZLES_URL, STORAGE_KEY } from "./config.js";
+import {
+  ANGELA_INTRO_ASSET_URL,
+  DATE_CHECK_INTERVAL_MS,
+  PUZZLES_URL,
+  STORAGE_KEY,
+} from "./config.js";
 import {
   GAME_STATUS,
   advanceClue,
@@ -13,6 +18,8 @@ import {
   validatePuzzles,
 } from "./game.js";
 import { reconcileActionState } from "./session.js";
+import { copyShareResult, createSharePayload, deliverShare } from "./share.js";
+import { runDailyIntro } from "./intro.js";
 
 const elements = {
   appStatus: document.querySelector("#app-status"),
@@ -22,8 +29,10 @@ const elements = {
   errorState: document.querySelector("#error-state"),
   puzzleDate: document.querySelector("#puzzle-date"),
   stageLabel: document.querySelector("#stage-label"),
+  scoreLabel: document.querySelector("#score-label"),
   scoreValue: document.querySelector("#score-value"),
   scoreUnit: document.querySelector("#score-unit"),
+  hudStreak: document.querySelector("#hud-streak"),
   clueList: document.querySelector("#clue-list"),
   showOptionsButton: document.querySelector("#show-options-button"),
   nextClueButton: document.querySelector("#next-clue-button"),
@@ -32,6 +41,11 @@ const elements = {
   resultPanel: document.querySelector("#result-panel"),
   resultTitle: document.querySelector("#result-title"),
   resultMessage: document.querySelector("#result-message"),
+  shareButton: document.querySelector("#share-button"),
+  copyResultButton: document.querySelector("#copy-result-button"),
+  shareFeedback: document.querySelector("#share-feedback"),
+  manualSharePanel: document.querySelector("#manual-share-panel"),
+  manualShareText: document.querySelector("#manual-share-text"),
   statsPanel: document.querySelector("#stats-panel"),
   statPlayed: document.querySelector("#stat-played"),
   statWins: document.querySelector("#stat-wins"),
@@ -40,6 +54,18 @@ const elements = {
   missingDate: document.querySelector("#missing-date"),
   errorMessage: document.querySelector("#error-message"),
   storageWarning: document.querySelector("#storage-warning"),
+  angelaIntro: document.querySelector("#angela-intro"),
+  angelaIntroImage: document.querySelector("#angela-intro-image"),
+  angelaIntroSkip: document.querySelector("#angela-intro-skip"),
+  angelaIntroTitle: document.querySelector("#angela-intro-title"),
+  angelaIntroScore: document.querySelector("#angela-intro-score"),
+  angelaIntroStreak: document.querySelector("#angela-intro-streak"),
+  gameTitle: document.querySelector("#game-title"),
+  skipLink: document.querySelector(".skip-link"),
+  siteHeader: document.querySelector(".site-header"),
+  gameLayout: document.querySelector(".game-layout"),
+  adSlot: document.querySelector(".ad-slot"),
+  siteFooter: document.querySelector(".site-footer"),
 };
 
 let puzzles = [];
@@ -66,6 +92,9 @@ elements.nextClueButton.addEventListener("click", () => {
   renderGame();
   announce(`Clue ${state.currentClueIndex + 1} revealed.`);
 });
+
+elements.shareButton?.addEventListener("click", shareCompletedGame);
+elements.copyResultButton?.addEventListener("click", copyCompletedGame);
 
 window.addEventListener("storage", synchronizeWithEnvironment);
 window.addEventListener("focus", synchronizeWithEnvironment);
@@ -143,6 +172,41 @@ function showToday() {
 
   if (stateChanged) saveState();
   renderGame();
+  const introDateKey = activeDateKey;
+  void runDailyIntro({
+    assetUrl: ANGELA_INTRO_ASSET_URL,
+    dateKey: introDateKey,
+    gameStatus: state.gameStatus,
+    score: state.score,
+    streak: state.stats.currentStreak,
+    elements: {
+      overlay: elements.angelaIntro,
+      image: elements.angelaIntroImage,
+      skip: elements.angelaIntroSkip,
+      title: elements.angelaIntroTitle,
+      score: elements.angelaIntroScore,
+      streak: elements.angelaIntroStreak,
+      returnFocus: elements.gameTitle,
+      backgroundElements: [
+        elements.skipLink,
+        elements.siteHeader,
+        elements.appStatus,
+        elements.loadingState,
+        elements.gameLayout,
+        elements.storageWarning,
+        elements.adSlot,
+        elements.siteFooter,
+      ],
+      scrollRoot: document.body,
+    },
+    preview: window.location.protocol === "about:",
+    shouldStillPlay: () =>
+      activeDateKey === introDateKey &&
+      state?.lastPlayedDate === introDateKey &&
+      state.gameStatus === GAME_STATUS.IN_PROGRESS &&
+      state.currentClueIndex === 0 &&
+      !state.optionsVisible,
+  });
 }
 
 function checkForDateChange() {
@@ -199,12 +263,19 @@ function renderGame() {
   showView(elements.gameState);
   elements.statsPanel.hidden = false;
   elements.puzzleDate.textContent = activeDateKey;
-  elements.stageLabel.textContent = isGameComplete(state)
-    ? "Daily result"
-    : `Clue ${state.currentClueIndex + 1} of 3`;
-  const pointsOnOffer = isGameComplete(state) ? state.score : 3 - state.currentClueIndex;
+  const complete = isGameComplete(state);
+  elements.stageLabel.textContent = complete ? "Result" : `${state.currentClueIndex + 1} / 3`;
+  elements.stageLabel.setAttribute(
+    "aria-label",
+    complete ? "Daily result" : `Clue ${state.currentClueIndex + 1} of 3`,
+  );
+  if (elements.scoreLabel) {
+    elements.scoreLabel.textContent = complete ? "Score" : "Worth";
+  }
+  const pointsOnOffer = complete ? state.score : 3 - state.currentClueIndex;
   elements.scoreValue.textContent = String(pointsOnOffer);
   elements.scoreUnit.textContent = pointsOnOffer === 1 ? "pt" : "pts";
+  if (elements.hudStreak) elements.hudStreak.textContent = String(state.stats.currentStreak);
 
   renderClues();
   renderOptions();
@@ -278,10 +349,75 @@ function makeGuess(selectedOption) {
   );
 }
 
+async function shareCompletedGame() {
+  const payload = getCurrentSharePayload();
+  if (!payload) return;
+
+  elements.shareButton.disabled = true;
+
+  try {
+    const result = await deliverShare(payload, window.navigator);
+    presentShareResult(result);
+  } finally {
+    elements.shareButton.disabled = false;
+  }
+}
+
+async function copyCompletedGame() {
+  const payload = getCurrentSharePayload();
+  if (!payload) return;
+
+  elements.copyResultButton.disabled = true;
+
+  try {
+    const result = await copyShareResult(payload, window.navigator);
+    presentShareResult(result);
+  } finally {
+    elements.copyResultButton.disabled = false;
+  }
+}
+
+function getCurrentSharePayload() {
+  const synchronization = synchronizeWithEnvironment();
+  const canShareCurrentResult =
+    !synchronization?.dateChanged &&
+    puzzle &&
+    state &&
+    isGameComplete(state) &&
+    state.lastPlayedDate === activeDateKey;
+
+  return canShareCurrentResult ? createSharePayload(state, window.location.href) : null;
+}
+
+function presentShareResult(result) {
+  if (result.status === "shared") {
+    elements.manualSharePanel.hidden = true;
+    showShareFeedback("Result shared.");
+  } else if (result.status === "copied") {
+    elements.manualSharePanel.hidden = true;
+    showShareFeedback("Result copied to your clipboard.");
+  } else if (result.status === "manual") {
+    elements.manualShareText.value = result.text;
+    elements.manualSharePanel.hidden = false;
+    showShareFeedback("Copy your result from the text box.");
+    elements.manualShareText.focus();
+    elements.manualShareText.select();
+  }
+}
+
 function renderResult() {
   const complete = isGameComplete(state);
   elements.resultPanel.hidden = !complete;
-  if (!complete) return;
+  if (!complete) {
+    if (elements.shareButton) elements.shareButton.hidden = true;
+    if (elements.copyResultButton) elements.copyResultButton.hidden = true;
+    if (elements.manualSharePanel) elements.manualSharePanel.hidden = true;
+    if (elements.shareFeedback) elements.shareFeedback.textContent = "";
+    return;
+  }
+
+  if (elements.shareButton) elements.shareButton.hidden = false;
+  if (elements.copyResultButton) elements.copyResultButton.hidden = false;
 
   if (state.gameStatus === GAME_STATUS.WON) {
     elements.resultTitle.textContent = "Correct";
@@ -290,6 +426,10 @@ function renderResult() {
     elements.resultTitle.textContent = "Sudden death";
     elements.resultMessage.textContent = `That answer was incorrect. Today's answer was ${puzzle.answer}.`;
   }
+}
+
+function showShareFeedback(message) {
+  elements.shareFeedback.textContent = message;
 }
 
 function renderMissingPuzzle() {

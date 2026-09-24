@@ -1,4 +1,4 @@
-# Who Am I? Daily — Milestone 1
+# Who Am I? Daily — Milestone 2
 
 A lightweight, mobile-first proof of concept for a daily sudden-death identity game. It uses plain HTML, CSS, and JavaScript, with no build step, runtime dependencies, backend, accounts, analytics, or external services.
 
@@ -49,11 +49,13 @@ by the game itself, and nothing in `index.html` references it.
 ├── js/
 │   ├── config.js           Data location, storage key, date-check interval
 │   ├── game.js             Rules, scoring, dates, validation, state transitions
+│   ├── intro.js            Angela opener, preload, motion, and focus behavior
 │   ├── session.js          Cross-tab and date-change reconciliation
+│   ├── share.js            Spoiler-free result text and browser share fallbacks
 │   └── app.js              Loading, rendering, events, persistence
-├── tests/                  Rule, state, and preview-isolation regression tests
+├── assets/                 Angela production artwork and source reference
+├── tests/                  Rule, state, intro, share, and preview regressions
 ├── tools/preview/          Development tool for viewing any date (see below)
-├── assets/README.md        Milestone 2 artwork requirement (asset not yet supplied)
 └── TESTING.md              What was verified and how to re-run it
 ```
 
@@ -159,30 +161,47 @@ localStorage.removeItem("who-am-i-daily-state");
 
 Refresh the page afterward.
 
+## Milestone 2 experience
+
+An in-progress daily game opens with the transparent Angela host artwork and a
+live visor readout for the current score and streak. The image is
+preloaded before the overlay appears, the opener can be skipped with its button
+or Escape, and keyboard focus stays inside the overlay until it closes. It plays
+once per local date in each tab session. Reduced-motion users, completed games,
+and browsers where the artwork or Session Storage is unavailable proceed
+straight to the game.
+
+The live game uses the same score and streak values in its compact HUD. The
+styled advertisement area is an empty placeholder only; it loads no advertising
+account, script, network request, or tracking.
+
+Completed games expose spoiler-free **Share result** and **Copy result** actions. The shared text
+contains only the game title, source date, score, and clue-stage outcome. It
+never includes the answer, clue text, answer options, streak, or other history.
+Share result prefers the browser's native share sheet, then falls back to the
+clipboard or a read-only text box. Copy result is always available alongside it
+and goes directly to the clipboard/manual-copy path, so an unavailable operating-
+system share sheet never blocks copying.
+A clean page URL is included only on a public web location; local and development
+preview URLs are omitted.
+
 ## Scope boundaries
 
-This repository is a fixed-scope proof of concept. Milestone 1 is the current
+This repository is a fixed-scope proof of concept. Milestone 2 is the current
 deliverable.
 
-**In scope (Milestone 1, delivered here)**
+**Delivered across Milestones 1 and 2**
 
 - Three-clue Sudden Death loop with 3/2/1 scoring and exact-match answers.
 - Local browser-date puzzle selection from `data/puzzles.json`.
 - Local Storage persistence of daily progress and cumulative statistics.
-- Functional, restrained, mobile-first interface, including the missing-puzzle
-  state.
+- Responsive dark HUD treatment and intentional missing-puzzle state.
+- Angela opening artwork with a dynamic score/streak overlay and safe fallbacks.
+- Spoiler-free sharing through native, clipboard, and manual-copy paths.
+- A styled, empty ad placeholder with no ad-serving integration.
 
-**Deferred to Milestone 2**
-
-- Final visual polish.
-- Angela opening artwork and the dissolve/fade into Clue 1.
-- Dynamic visor HUD overlay (`DAILY WHOAMIGAME`, `SCORE`, `STREAK`).
-- Spoiler-free social sharing.
-- A styled, empty ad placeholder container only.
-
-Milestone 2 needs a client-supplied `assets/angela_host.png`. That asset has not
-been provided; see [`assets/README.md`](assets/README.md) for the specification
-and the reason no substitute was created.
+See [`assets/README.md`](assets/README.md) for the Angela production asset and
+source-art provenance.
 
 **Explicitly out of scope (needs an approved scope change)**
 

@@ -1,6 +1,6 @@
 # Testing
 
-How Milestone 1 was verified, and how to re-run that verification.
+How Milestones 1 and 2 were verified, and how to re-run that verification.
 
 ## Automated tests
 
@@ -27,6 +27,8 @@ DOM or storage access, so every rule can be asserted directly:
 | Stored state | Malformed and internally inconsistent saved data are rejected safely |
 | Preview isolation | Preview load, reload, reset, enumeration, and failures stay separate from production storage |
 | Session reconciliation | Stale-tab actions, cross-tab progress, and local-date changes reconcile before play |
+| Angela intro | Eligibility, per-date session keys, preload failure, reduced motion, live HUD values, focus containment, and restoration |
+| Spoiler-free sharing | Win/loss copy, unfinished rejection, URL safety, native share, cancellation, direct copy, clipboard, and manual fallback |
 
 ## Manual verification
 
@@ -51,6 +53,20 @@ origin.
 
 The midnight boundary is covered through the deterministic session-reconciliation
 seam in `tests/session.test.mjs`. It was not claimed as a wall-clock manual test.
+
+### 2026-09-24 Milestone 2 follow-up
+
+| Scenario | Result |
+| --- | --- |
+| Angela opener | Pass — the edited transparent host rendered with live `DAILY WHOAMIGAME`, `SCORE 0`, and `STREAK 0` visor text |
+| Intro dismissal | Pass — clicking Skip hid the modal, restored focus to the game title, and left the clue controls active |
+| Intro keyboard behavior | Automated — Tab remains on Skip, Escape dismisses, and focus returns to the game title |
+| Missing/broken intro asset | Automated — gameplay remains available and no broken image is rendered |
+| Spoiler-free share copy | Automated — output contains only title/date/score/clue outcome and rejects an unfinished game |
+| Copy result | Pass — a completed clue-2 result exposed the dedicated control and reported “Result copied to your clipboard.” in the browser |
+| Manual-copy fallback | Automated — clipboard denial returns the same spoiler-free manual-copy text in `tests/share.test.mjs`; the DOM textarea remains a browser integration path |
+| Native OS share sheet | Requires a final manual check on a compatible secure-context device; Node and desktop browser automation cannot open or validate the operating-system share sheet |
+| Responsive M2 HUD/share layout | Pass — visually inspected at 390px mobile and 1280px desktop widths; Angela, the live visor, stage/score/streak HUD, share controls, and ad placeholder remained legible without overflow |
 
 ### 2026-09-22 full flow
 

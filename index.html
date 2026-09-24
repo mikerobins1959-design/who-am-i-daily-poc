@@ -14,13 +14,43 @@
   <body>
     <a class="skip-link" href="#main-content">Skip to game</a>
 
+    <section
+      id="angela-intro"
+      class="angela-intro"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="angela-intro-title"
+      hidden
+    >
+      <div class="angela-intro-visual">
+        <img id="angela-intro-image" class="angela-intro-image" alt="Angela, the Who Am I? host">
+        <div class="angela-intro-hud">
+          <p id="angela-intro-title" class="angela-intro-title">Daily WhoAmIGame</p>
+          <dl class="angela-intro-readout">
+            <div>
+              <dt>Score</dt>
+              <dd id="angela-intro-score">0</dd>
+            </div>
+            <div>
+              <dt>Streak</dt>
+              <dd id="angela-intro-streak">0</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+      <button id="angela-intro-skip" class="intro-skip" type="button">Skip intro</button>
+    </section>
+
     <header class="site-header">
       <div class="page-shell header-inner">
-        <a class="wordmark" href="./" aria-label="Who Am I? Daily home">
-          <span class="wordmark-title">Who Am I?</span>
-          <span class="wordmark-tag">Daily</span>
-        </a>
-        <p class="game-mode">Sudden Death</p>
+        <div class="brand-lockup">
+          <div id="brand-logo-slot" class="brand-logo-slot" aria-hidden="true" hidden></div>
+          <a class="wordmark" href="./" aria-label="Who Am I? Daily home">
+            <span class="wordmark-title">Who Am I?</span>
+            <span class="wordmark-tag">Daily</span>
+          </a>
+        </div>
+        <p class="game-mode"><span aria-hidden="true">●</span> Sudden Death</p>
       </div>
     </header>
 
@@ -39,18 +69,23 @@
         <section id="game-state" class="game-column" aria-labelledby="game-title" hidden>
           <article class="game-card">
             <header class="game-header">
-              <div>
+              <div class="game-identity">
+                <p class="hud-kicker">Daily challenge</p>
                 <p id="puzzle-date" class="eyebrow"></p>
-                <h1 id="game-title">Who am I?</h1>
+                <h1 id="game-title" tabindex="-1">Who am I?</h1>
               </div>
-              <dl class="score-card" aria-label="Current game position">
+              <dl class="score-card" aria-label="Current game position and streak">
                 <div>
                   <dt>Clue</dt>
                   <dd id="stage-label">1 of 3</dd>
                 </div>
                 <div>
-                  <dt>Worth</dt>
+                  <dt id="score-label">Worth</dt>
                   <dd><span id="score-value">3</span> <span id="score-unit" class="score-unit">pts</span></dd>
+                </div>
+                <div>
+                  <dt>Streak</dt>
+                  <dd id="hud-streak">0</dd>
                 </div>
               </dl>
             </header>
@@ -87,6 +122,21 @@
               <p class="eyebrow">Today’s result</p>
               <h2 id="result-title"></h2>
               <p id="result-message"></p>
+              <div class="share-actions">
+                <div class="share-buttons">
+                  <button id="share-button" class="button button-primary" type="button" hidden>
+                    Share result
+                  </button>
+                  <button id="copy-result-button" class="button button-secondary" type="button" hidden>
+                    Copy result
+                  </button>
+                </div>
+                <p id="share-feedback" class="share-feedback" aria-live="polite"></p>
+                <div id="manual-share-panel" class="manual-share-panel" hidden>
+                  <label for="manual-share-text">Copy your result</label>
+                  <textarea id="manual-share-text" rows="4" readonly></textarea>
+                </div>
+              </div>
             </section>
           </article>
         </section>
@@ -158,6 +208,10 @@
       <aside id="storage-warning" class="storage-warning" role="status" hidden>
         <strong>Your progress can’t be saved.</strong>
         <span>You can still play, but refreshing may restart the game.</span>
+      </aside>
+
+      <aside class="ad-slot" aria-label="Advertisement">
+        <span>Advertisement</span>
       </aside>
     </main>
 
