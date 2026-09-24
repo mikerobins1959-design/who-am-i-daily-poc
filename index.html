@@ -141,6 +141,25 @@
           </article>
         </section>
 
+        <section id="missing-state" class="state-card" aria-labelledby="missing-title" hidden>
+          <p class="eyebrow">No puzzle available</p>
+          <h1 id="missing-title">Tomorrow’s puzzle is being prepared</h1>
+          <p>
+            There isn’t a puzzle scheduled for <strong id="missing-date">your local date</strong>.
+            Please check back soon.
+          </p>
+        </section>
+
+        <section id="error-state" class="state-card" aria-labelledby="error-title" hidden>
+          <p class="eyebrow">Unable to load</p>
+          <h1 id="error-title">Today’s game isn’t available</h1>
+          <p id="error-message">Please refresh the page and try again.</p>
+        </section>
+
+        <aside class="ad-slot" aria-label="Advertisement">
+          <span>Advertisement</span>
+        </aside>
+
         <aside id="stats-panel" class="stats-card" aria-labelledby="stats-title" hidden>
           <h2 id="stats-title">Your stats</h2>
           <dl class="stats-grid">
@@ -188,21 +207,6 @@
             </div>
           </section>
         </aside>
-
-        <section id="missing-state" class="state-card" aria-labelledby="missing-title" hidden>
-          <p class="eyebrow">No puzzle available</p>
-          <h1 id="missing-title">Tomorrow’s puzzle is being prepared</h1>
-          <p>
-            There isn’t a puzzle scheduled for <strong id="missing-date">your local date</strong>.
-            Please check back soon.
-          </p>
-        </section>
-
-        <section id="error-state" class="state-card" aria-labelledby="error-title" hidden>
-          <p class="eyebrow">Unable to load</p>
-          <h1 id="error-title">Today’s game isn’t available</h1>
-          <p id="error-message">Please refresh the page and try again.</p>
-        </section>
       </div>
 
       <aside id="storage-warning" class="storage-warning" role="status" hidden>
@@ -210,9 +214,6 @@
         <span>You can still play, but refreshing may restart the game.</span>
       </aside>
 
-      <aside class="ad-slot" aria-label="Advertisement">
-        <span>Advertisement</span>
-      </aside>
     </main>
 
     <footer class="site-footer">

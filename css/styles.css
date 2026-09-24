@@ -262,8 +262,12 @@ main {
   order: 1;
 }
 
-.game-layout > .stats-card {
+.game-layout > .ad-slot {
   order: 2;
+}
+
+.game-layout > .stats-card {
+  order: 3;
 }
 
 .game-card,
@@ -637,7 +641,6 @@ main {
 
 .ad-slot {
   min-height: 5.5rem;
-  margin-block-start: clamp(2.5rem, 7vw, 4.5rem);
   display: grid;
   place-items: center;
   border: 1px solid rgb(168 184 196 / 15%);
@@ -829,6 +832,22 @@ main {
   .game-layout {
     grid-template-columns: minmax(0, 1fr) 19rem;
     gap: 1.5rem;
+  }
+
+  .game-layout > .game-column,
+  .game-layout > .state-card {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .game-layout > .stats-card {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .game-layout > .ad-slot {
+    grid-column: 2;
+    grid-row: 2;
   }
 }
 

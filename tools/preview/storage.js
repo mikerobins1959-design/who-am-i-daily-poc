@@ -15,6 +15,20 @@ export function resolvePreviewDate(storedDate, currentDate = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
+export function resolvePreviewIntroValues(serializedState) {
+  try {
+    const state = JSON.parse(serializedState);
+    return {
+      score: isNonNegativeInteger(state?.score) ? state.score : 0,
+      streak: isNonNegativeInteger(state?.stats?.currentStreak)
+        ? state.stats.currentStreak
+        : 0,
+    };
+  } catch {
+    return { score: 0, streak: 0 };
+  }
+}
+
 export function createPreviewStorage(nativeStorage) {
   return {
     get length() {
@@ -68,4 +82,8 @@ function isValidDateKey(value) {
     candidate.getUTCMonth() === month - 1 &&
     candidate.getUTCDate() === day
   );
+}
+
+function isNonNegativeInteger(value) {
+  return Number.isInteger(value) && value >= 0;
 }

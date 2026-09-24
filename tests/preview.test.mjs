@@ -6,6 +6,7 @@ import {
   PREVIEW_STORAGE_KEY,
   createPreviewStorage,
   resolvePreviewDate,
+  resolvePreviewIntroValues,
 } from "../tools/preview/storage.js";
 
 function createMemoryStorage(initial = {}) {
@@ -126,4 +127,28 @@ test("preview date falls back to the current local date when no valid fixture is
   const today = new Date(2026, 8, 23, 23, 30);
   assert.equal(resolvePreviewDate(null, today), "2026-09-23");
   assert.equal(resolvePreviewDate("2026-02-30", today), "2026-09-23");
+});
+
+test("preview intro reads HUD values without changing a completed saved game", () => {
+  const completed = JSON.stringify({
+    gameStatus: "WON",
+    score: 2,
+    stats: { currentStreak: 4 },
+  });
+
+  assert.deepEqual(resolvePreviewIntroValues(completed), { score: 2, streak: 4 });
+  assert.equal(completed, JSON.stringify({
+    gameStatus: "WON",
+    score: 2,
+    stats: { currentStreak: 4 },
+  }));
+});
+
+test("preview intro uses safe zero values for missing or malformed fixtures", () => {
+  assert.deepEqual(resolvePreviewIntroValues(null), { score: 0, streak: 0 });
+  assert.deepEqual(resolvePreviewIntroValues("{bad json"), { score: 0, streak: 0 });
+  assert.deepEqual(
+    resolvePreviewIntroValues(JSON.stringify({ score: -1, stats: { currentStreak: "4" } })),
+    { score: 0, streak: 0 },
+  );
 });

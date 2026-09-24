@@ -32,6 +32,12 @@ Pick a date to run the real application with its clock fixed to that day. You ca
 also paste a saved-state JSON object to resume from a specific situation, which
 is how the streak and refresh behaviour in `TESTING.md` was verified.
 
+**Replay intro cleanly** replays Angela over the real framed app and hides the
+development toolbar for screenshots. It clears only the preview intro's
+per-session seen marker; the saved preview game and statistics remain untouched.
+**Clean presentation** hides the toolbar without replaying the intro. Press
+Escape or tab to **Show preview controls** to return.
+
 The preview keeps its saved state in a separate Local Storage namespace. Opening,
 reloading, seeding, or resetting the preview never changes progress saved by the
 normal game on the same origin. Preview state is preserved across preview reloads;

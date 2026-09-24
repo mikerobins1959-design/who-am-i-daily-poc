@@ -42,8 +42,26 @@
         cursor: pointer;
       }
       button.secondary { background: #fff; color: #2f6b55; }
+      .toolbar-link {
+        padding: 0.45rem 0.9rem;
+        border: 1px solid #2f6b55;
+        border-radius: 6px;
+        color: #2f6b55;
+        font-weight: 650;
+        text-decoration: none;
+      }
       .hint { flex-basis: 100%; margin: 0; font-size: 0.78rem; color: #5f5c55; }
       iframe { display: block; width: 100%; height: calc(100vh - 5.9rem); border: 0; background: #fff; }
+      .preview-return {
+        position: fixed;
+        z-index: 1000;
+        top: 0.75rem;
+        left: 0.75rem;
+        transform: translateY(-180%);
+      }
+      .preview-return:focus { transform: translateY(0); }
+      body.presentation .toolbar { display: none; }
+      body.presentation iframe { height: 100vh; }
     </style>
   </head>
   <body>
@@ -58,12 +76,17 @@
       </label>
       <button type="submit">Load</button>
       <button class="secondary" id="preview-reset" type="button">Load with no saved state</button>
+      <button class="secondary" id="preview-replay-intro" type="button">Replay intro cleanly</button>
+      <a class="toolbar-link" id="preview-clean-view" href="?presentation=1">Clean presentation</a>
       <p class="hint">
         Runs the real application in the frame below with its clock fixed to the chosen date.
         Nothing here is loaded by the game itself — it is a development tool only.
       </p>
     </form>
 
+    <a class="toolbar-link preview-return" id="preview-return" href="?presentation=0">
+      Show preview controls
+    </a>
     <iframe id="app-frame" title="Who Am I? Daily preview"></iframe>
 
     <script type="module">
@@ -74,6 +97,11 @@
       const frame = document.querySelector("#app-frame");
       const dateInput = document.querySelector("#preview-date");
       const stateInput = document.querySelector("#preview-state");
+      const controls = document.querySelector("#controls");
+      const replayButton = document.querySelector("#preview-replay-intro");
+      const presentation = new URLSearchParams(window.location.search).get("presentation") === "1";
+
+      setPresentation(presentation, false);
 
       // Keep the selected fixture date across toolbar reloads.
       dateInput.value = resolvePreviewDate(sessionStorage.getItem(DATE_KEY));
@@ -93,11 +121,15 @@
         // The marker keeps each load unique, so reloading the same date with
         // different saved state still re-runs the frame.
         const source = await fetch("/index.html", { cache: "no-store" }).then((r) => r.text());
-        const marker = `<!-- preview ${dateInput.value} ${Date.now()} -->`;
-        frame.srcdoc = source.replace(
-          "<head>",
-          '<head><base href="/">' + marker + '<script type="module" src="/tools/preview/date-shim.js"><' + "/script>",
-        );
+        const revision = Date.now();
+        const marker = `<!-- preview ${dateInput.value} ${revision} -->`;
+        const appScript = '<script type="module" src="js/app.js"><' + "/script>";
+        const previewScript =
+          `<script type="module" src="/tools/preview/runner.js?preview=${revision}"><`
+          + "/script>";
+        frame.srcdoc = source
+          .replace("<head>", '<head><base href="/">' + marker)
+          .replace(appScript, previewScript);
       }
 
       document.querySelector("#controls").addEventListener("submit", (event) => {
@@ -105,6 +137,58 @@
         load(false);
       });
       document.querySelector("#preview-reset").addEventListener("click", () => load(true));
+      replayButton.addEventListener("click", async () => {
+        replayButton.disabled = true;
+        setPresentation(true);
+        try {
+          const replay = frame.contentWindow?.__WHO_AM_I_PREVIEW_REPLAY_INTRO__;
+          if (typeof replay !== "function") {
+            setPresentation(false);
+            replayButton.focus();
+            return;
+          }
+          await replay();
+        } finally {
+          replayButton.disabled = false;
+        }
+      });
+      document.querySelector("#preview-clean-view").addEventListener("click", (event) => {
+        event.preventDefault();
+        setPresentation(true);
+        frame.focus();
+      });
+      document.querySelector("#preview-return").addEventListener("click", (event) => {
+        event.preventDefault();
+        setPresentation(false);
+        replayButton.focus();
+      });
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && document.body.classList.contains("presentation")) {
+          setPresentation(false);
+          replayButton.focus();
+        }
+      });
+      window.addEventListener("message", (event) => {
+        if (event.source !== frame.contentWindow) return;
+
+        if (event.data?.type === "who-am-i-preview-bridge-ready") {
+          replayButton.disabled = false;
+        } else if (event.data?.type === "who-am-i-preview-show-controls") {
+          setPresentation(false);
+          replayButton.focus();
+        }
+      });
+
+      function setPresentation(enabled, updateUrl = true) {
+        document.body.classList.toggle("presentation", enabled);
+        controls.inert = enabled;
+        if (!updateUrl) return;
+
+        const url = new URL(window.location.href);
+        if (enabled) url.searchParams.set("presentation", "1");
+        else url.searchParams.delete("presentation");
+        window.history.replaceState(null, "", url);
+      }
 
       load(false);
     </script>

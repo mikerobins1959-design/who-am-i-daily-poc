@@ -26,6 +26,7 @@ DOM or storage access, so every rule can be asserted directly:
 | Puzzle contract | Date format, three clues, eight distinct options, answer present |
 | Stored state | Malformed and internally inconsistent saved data are rejected safely |
 | Preview isolation | Preview load, reload, reset, enumeration, and failures stay separate from production storage |
+| Preview replay data | Completed-game HUD values are read without changing saved state; malformed data falls back safely |
 | Session reconciliation | Stale-tab actions, cross-tab progress, and local-date changes reconcile before play |
 | Angela intro | Eligibility, per-date session keys, preload failure, reduced motion, live HUD values, focus containment, and restoration |
 | Spoiler-free sharing | Win/loss copy, unfinished rejection, URL safety, native share, cancellation, direct copy, clipboard, and manual fallback |
@@ -64,6 +65,8 @@ seam in `tests/session.test.mjs`. It was not claimed as a wall-clock manual test
 | Missing/broken intro asset | Automated — gameplay remains available and no broken image is rendered |
 | Spoiler-free share copy | Automated — output contains only title/date/score/clue outcome and rejects an unfinished game |
 | Copy result | Pass — a completed clue-2 result exposed the dedicated control and reported “Result copied to your clipboard.” in the browser |
+| Preview intro replay | Pass — replay showed the real Angela intro in a toolbar-free view over a completed clue-2 failure; after the dissolve, the failure and played 1 statistics were unchanged |
+| Preview presentation recovery | Pass — Escape restored the preview controls after the intro, while the simulated date and isolated saved state remained active |
 | Manual-copy fallback | Automated — clipboard denial returns the same spoiler-free manual-copy text in `tests/share.test.mjs`; the DOM textarea remains a browser integration path |
 | Native OS share sheet | Requires a final manual check on a compatible secure-context device; Node and desktop browser automation cannot open or validate the operating-system share sheet |
 | Responsive M2 HUD/share layout | Pass — visually inspected at 390px mobile and 1280px desktop widths; Angela, the live visor, stage/score/streak HUD, share controls, and ad placeholder remained legible without overflow |
