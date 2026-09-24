@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+import { ANGELA_INTRO_DURATION_MS, ANGELA_INTRO_EXIT_MS } from "../js/config.js";
 import { GAME_STATUS } from "../js/game.js";
 import {
   getIntroDecision,
@@ -47,6 +49,38 @@ function inertable({ inert = false, attribute = false } = {}) {
     },
   };
 }
+
+test("intro motion keeps both visual phases visible for their configured timing", async () => {
+  const css = await readFile(new URL("../css/styles.css", import.meta.url), "utf8");
+  const leavingRule = css.match(/\.angela-intro\.is-leaving\s*{([^}]*)}/s);
+
+  assert.ok(ANGELA_INTRO_DURATION_MS >= 3_000, "intro should remain readable before leaving");
+  assert.ok(
+    ANGELA_INTRO_EXIT_MS >= 800 && ANGELA_INTRO_EXIT_MS <= 1_000,
+    "intro dissolve should last 800–1000ms",
+  );
+  assert.ok(leavingRule, "the leaving phase needs its own style rule");
+  assert.match(
+    leavingRule[1],
+    /display:\s*grid;[^}]*opacity:\s*1;/s,
+    "the leaving phase must remain rendered and start fully opaque",
+  );
+  assert.match(
+    leavingRule[1],
+    new RegExp(`animation:[^;]*var\\(--intro-exit-duration, ${ANGELA_INTRO_EXIT_MS}ms\\)`),
+    "the CSS dissolve and JavaScript cleanup timer must stay aligned",
+  );
+  assert.match(
+    css,
+    /@keyframes intro-leave\s*{\s*from\s*{\s*opacity:\s*1;\s*}\s*to\s*{\s*opacity:\s*0;/s,
+    "the dissolve must explicitly animate from visible to transparent",
+  );
+  assert.match(
+    css,
+    /\.angela-intro\.is-active \.angela-intro-visual\s*{[^}]*intro-visual-arrive/s,
+    "Angela should use the entrance settle animation",
+  );
+});
 
 test("production and preview intros use separate per-date session keys", () => {
   assert.equal(getIntroStorageKey("2026-09-24"), "who-am-i-intro-seen:2026-09-24");
@@ -168,8 +202,14 @@ test("runner shows live HUD values, contains focus, and restores it after dismis
   }
 
   const classes = new Set();
+  const styles = new Map();
   const overlay = new EventTarget();
   overlay.hidden = true;
+  overlay.style = {
+    setProperty(name, value) {
+      styles.set(name, value);
+    },
+  };
   overlay.classList = {
     add(value) {
       classes.add(value);
@@ -220,6 +260,7 @@ test("runner shows live HUD values, contains focus, and restores it after dismis
   await new Promise((resolve) => setImmediate(resolve));
 
   assert.equal(overlay.hidden, false);
+  assert.equal(styles.get("--intro-exit-duration"), "0ms");
   assert.equal(skipFocusCount, 1);
   assert.equal(title.textContent, "DAILY WHOAMIGAME");
   assert.equal(score.textContent, "3");

@@ -173,6 +173,7 @@ export async function runDailyIntro({
     if (elements.title) elements.title.textContent = ANGELA_INTRO_TITLE;
     if (elements.score) elements.score.textContent = String(score);
     if (elements.streak) elements.streak.textContent = String(streak);
+    elements.overlay.style?.setProperty("--intro-exit-duration", `${exitMs}ms`);
     elements.overlay.hidden = false;
     elements.overlay.classList.remove("is-leaving");
     elements.overlay.classList.add("is-active");

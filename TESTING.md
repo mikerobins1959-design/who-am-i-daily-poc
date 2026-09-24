@@ -60,6 +60,7 @@ seam in `tests/session.test.mjs`. It was not claimed as a wall-clock manual test
 | Scenario | Result |
 | --- | --- |
 | Angela opener | Pass — the edited transparent host rendered with live `DAILY WHOAMIGAME`, `SCORE 0`, and `STREAK 0` visor text |
+| Intro entrance and dissolve | Pass — a fresh preview run showed the backdrop fade and scale settle, then a continuous 900ms dissolve with the clue-one game visible beneath before the overlay was hidden |
 | Intro dismissal | Pass — clicking Skip hid the modal, restored focus to the game title, and left the clue controls active |
 | Intro keyboard behavior | Automated — Tab remains on Skip, Escape dismisses, and focus returns to the game title |
 | Missing/broken intro asset | Automated — gameplay remains available and no broken image is rendered |
