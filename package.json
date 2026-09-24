@@ -2,7 +2,7 @@
   "name": "who-am-i-daily-poc",
   "version": "1.0.0",
   "private": true,
-  "description": "Daily three-clue sudden-death guessing game — Milestone 1 proof of concept.",
+  "description": "Daily three-clue sudden-death identity game proof of concept.",
   "type": "module",
   "scripts": {
     "test": "node --test"

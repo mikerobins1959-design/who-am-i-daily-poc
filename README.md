@@ -31,6 +31,8 @@ http://localhost:8000/tools/preview/index.html
 Pick a date to run the real application with its clock fixed to that day. You can
 also paste a saved-state JSON object to resume from a specific situation, which
 is how the streak and refresh behaviour in `TESTING.md` was verified.
+The repository currently contains one client-provided sample puzzle, dated
+`2026-09-22`; use that date to review a playable game.
 
 **Replay intro cleanly** replays Angela over the real framed app and hides the
 development toolbar for screenshots. It clears only the preview intro's
@@ -190,6 +192,11 @@ and goes directly to the clipboard/manual-copy path, so an unavailable operating
 system share sheet never blocks copying.
 A clean page URL is included only on a public web location; local and development
 preview URLs are omitted.
+
+Native sharing and programmatic clipboard access require a secure browser
+context. HTTPS is required on a hosted site, while browsers treat `localhost`
+as secure for local development. When testing from a phone over plain LAN HTTP,
+the game falls back to the spoiler-free manual-copy field.
 
 ## Scope boundaries
 

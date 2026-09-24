@@ -11,8 +11,8 @@ npm test
 The suite runs on Node's built-in test runner (Node 20+). There is no test
 framework to install and no third-party dependency.
 
-The tests target `js/game.js`, which holds the rules as pure functions with no
-DOM or storage access, so every rule can be asserted directly:
+The tests cover the pure game rules plus session reconciliation, intro, sharing,
+and preview helpers without requiring browser automation:
 
 | Area | Covered |
 | --- | --- |
@@ -65,10 +65,11 @@ seam in `tests/session.test.mjs`. It was not claimed as a wall-clock manual test
 | Missing/broken intro asset | Automated — gameplay remains available and no broken image is rendered |
 | Spoiler-free share copy | Automated — output contains only title/date/score/clue outcome and rejects an unfinished game |
 | Copy result | Pass — a completed clue-2 result exposed the dedicated control and reported “Result copied to your clipboard.” in the browser |
+| iPhone over LAN HTTP | Client check — the game completed with a 2-point clue-2 win and displayed the spoiler-free manual-copy fallback; the supplied screenshot confirms this result, but is not a comprehensive device test |
 | Preview intro replay | Pass — replay showed the real Angela intro in a toolbar-free view over a completed clue-2 failure; after the dissolve, the failure and played 1 statistics were unchanged |
 | Preview presentation recovery | Pass — Escape restored the preview controls after the intro, while the simulated date and isolated saved state remained active |
 | Manual-copy fallback | Automated — clipboard denial returns the same spoiler-free manual-copy text in `tests/share.test.mjs`; the DOM textarea remains a browser integration path |
-| Native OS share sheet | Requires a final manual check on a compatible secure-context device; Node and desktop browser automation cannot open or validate the operating-system share sheet |
+| Native OS share sheet | Client reports it works on a MacBook; browser was not specified. iPhone native sharing remains unverified pending an HTTPS test because LAN HTTP is not a secure context |
 | Responsive M2 HUD/share layout | Pass — visually inspected at 390px mobile and 1280px desktop widths; Angela, the live visor, stage/score/streak HUD, share controls, and ad placeholder remained legible without overflow |
 
 ### 2026-09-22 full flow
