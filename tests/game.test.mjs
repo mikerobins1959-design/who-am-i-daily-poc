@@ -7,6 +7,7 @@ import {
   advanceClue,
   createGameState,
   findPuzzleForDate,
+  formatDisplayDate,
   getLocalDateKey,
   parseStoredState,
   prepareStateForDate,
@@ -34,6 +35,14 @@ const puzzle = {
 test("formats the player's local date without relying on UTC", () => {
   const localDate = new Date(2026, 8, 22, 23, 30);
   assert.equal(getLocalDateKey(localDate), "2026-09-22");
+});
+
+test("formats a stored date key for UK display without changing the key", () => {
+  const dateKey = "2026-09-22";
+
+  assert.equal(formatDisplayDate(dateKey), "22/09/2026");
+  assert.equal(dateKey, "2026-09-22");
+  assert.throws(() => formatDisplayDate("22/09/2026"), /valid YYYY-MM-DD/);
 });
 
 test("validates the checked-in issue #3 puzzle data", async () => {

@@ -92,6 +92,9 @@ and the Local Storage boundary. Puzzle content stays entirely in
 
 Add one object to the array in `data/puzzles.json`. Dates are matched to the player's local browser date and must use `YYYY-MM-DD` format. Do not reuse a date or duplicate another day's content to fill a gap.
 
+The game keeps this ISO-style format for puzzle matching and saved state, while
+player-facing dates use UK `DD/MM/YYYY` format.
+
 ```json
 {
   "date": "2026-09-22",
@@ -186,8 +189,8 @@ Refresh the page afterward.
 
 ## Milestone 2 experience
 
-An in-progress daily game opens with the transparent Angela host artwork and a
-live visor readout for the current score and streak. The image is
+An in-progress daily game opens with the final client-supplied Angela artwork,
+a CSS edge blend, and a live visor readout for the current score and streak. The image is
 preloaded before the overlay appears, the opener can be skipped with its button
 or Escape, and keyboard focus stays inside the overlay until it closes. It plays
 once per local date in each tab session. Reduced-motion users, completed games,
@@ -234,9 +237,10 @@ the game falls back to the spoiler-free manual-copy field.
 The header information button and footer **FAQ, contact & legal** button open the
 same native dialog. It explains the final scoring, clue-lock, refresh, date, and
 local-statistics rules; provides the support email as a `mailto:` link; and
-includes the client-facing disclaimer. `js/info.js` owns only dialog lifecycle,
-page scroll locking, and focus restoration. It does not read or change game
-state, make network requests, or collect contact details.
+includes the client-facing disclaimer and supplied Instagram and TikTok profile
+links. `js/info.js` owns only dialog lifecycle, page scroll locking, and focus
+restoration. It does not read or change game state, make network requests, or
+collect contact details.
 
 ## Scope boundaries
 

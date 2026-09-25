@@ -24,8 +24,8 @@ test("creates a spoiler-free winning result with date, clue, and score", () => {
   const payload = createSharePayload(completedState({ clue: 2 }), "https://game.example/daily?q=1#result");
 
   assert.deepEqual(payload, {
-    title: "Who Am I? Daily",
-    text: "Who Am I? Daily — 2026-09-22\nSolved on clue 2 of 3 · 2/3 points",
+    title: "Who Am I ? Daily",
+    text: "Who Am I ? Daily — 22/09/2026\nSolved on clue 2 of 3 · 2/3 points",
     url: "https://game.example/daily",
   });
   assert.doesNotMatch(getShareCopyText(payload), /Ada Lovelace|Grace Hopper|computer programmer/);
@@ -34,7 +34,7 @@ test("creates a spoiler-free winning result with date, clue, and score", () => {
 test("creates a spoiler-free sudden-death result", () => {
   const payload = createSharePayload(completedState({ clue: 3, won: false }));
 
-  assert.equal(payload.text, "Who Am I? Daily — 2026-09-22\nSudden Death on clue 3 of 3 · 0/3 points");
+  assert.equal(payload.text, "Who Am I ? Daily — 22/09/2026\nSudden Death on clue 3 of 3 · 0/3 points");
   assert.equal("url" in payload, false);
 });
 
@@ -161,7 +161,7 @@ test("direct copy bypasses native share and writes spoiler-free text", async () 
 
   assert.equal(result.status, "copied");
   assert.equal(shareCalled, false);
-  assert.equal(copied, "Who Am I? Daily — 2026-09-22\nSolved on clue 1 of 3 · 3/3 points");
+  assert.equal(copied, "Who Am I ? Daily — 22/09/2026\nSolved on clue 1 of 3 · 3/3 points");
   assert.doesNotMatch(copied, /Ada Lovelace|Grace Hopper/);
 });
 

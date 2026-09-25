@@ -9,6 +9,7 @@ import {
   advanceClue,
   createDefaultStats,
   findPuzzleForDate,
+  formatDisplayDate,
   getLocalDateKey,
   isGameComplete,
   parseStoredState,
@@ -250,7 +251,7 @@ function synchronizeWithEnvironment() {
 
   if (result.dateChanged) {
     showToday();
-    announce(`The local date changed to ${activeDateKey}.`);
+    announce(`The local date changed to ${formatDisplayDate(activeDateKey)}.`);
     return { state, dateChanged: true, canAct: false };
   }
 
@@ -263,7 +264,7 @@ function synchronizeWithEnvironment() {
 function renderGame() {
   showView(elements.gameState);
   elements.statsPanel.hidden = false;
-  elements.puzzleDate.textContent = activeDateKey;
+  elements.puzzleDate.textContent = formatDisplayDate(activeDateKey);
   const complete = isGameComplete(state);
   elements.stageLabel.textContent = complete ? "Result" : `${state.currentClueIndex + 1} / 3`;
   elements.stageLabel.setAttribute(
@@ -438,10 +439,10 @@ function showShareFeedback(message) {
 function renderMissingPuzzle() {
   showView(elements.missingState);
   elements.statsPanel.hidden = false;
-  elements.missingDate.textContent = activeDateKey;
+  elements.missingDate.textContent = formatDisplayDate(activeDateKey);
   renderStats(state?.stats ?? createDefaultStats());
   renderStorageWarning();
-  announce(`No puzzle is scheduled for ${activeDateKey}.`);
+  announce(`No puzzle is scheduled for ${formatDisplayDate(activeDateKey)}.`);
 }
 
 function showError(message) {

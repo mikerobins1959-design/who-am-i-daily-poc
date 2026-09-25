@@ -19,6 +19,7 @@ and preview helpers without requiring browser automation:
 | Scoring | Correct answer at clue 1, 2, 3 scores 3, 2, 1 |
 | Sudden death | Wrong answer at every clue ends the day at 0 |
 | Answer matching | Comparison is exact; `"ada lovelace"` loses |
+| Date presentation | Valid local date keys display as UK `DD/MM/YYYY`; matching and storage remain `YYYY-MM-DD` |
 | Clue flow | Advancing lowers the score on offer and stops at clue 3; revealing options locks the current clue |
 | Replay | A finished day stays finished and is never counted twice |
 | Restoration | An in-progress day restores its clue, answer grid, and clue lock |
@@ -55,6 +56,22 @@ on a separate loopback origin.
 
 The midnight boundary is covered through the deterministic session-reconciliation
 seam in `tests/session.test.mjs`. It was not claimed as a wall-clock manual test.
+
+### 2026-09-25 final-polish follow-up
+
+| Scenario | Result |
+| --- | --- |
+| UK date and approved titles | Pass — the game displayed `22/09/2026` and the approved `Who Am I ?` titles at 320px, 390px, and 1280px |
+| Responsive final HUD | Pass — brighter labels remained legible without overlap or horizontal overflow at 320×740, 390px, and 1280px |
+| Final Angela artwork | Pass — the client-supplied image, edge blend, and live score/streak values rendered correctly on mobile |
+| Dynamic intro values | Pass — replay after a completed game displayed earned score 2 and current streak 1 without changing the saved result |
+| Social links | Pass — Instagram and TikTok used the supplied profile URLs with safe new-tab attributes |
+| Clue lock and completion persistence | Pass — clue 2 choices locked further clues; a 2-point win survived refresh with played 1 and wins 1 |
+| Review control isolation | Pass — during intro replay the accessibility tree exposed only the intro and Skip control; review controls returned afterward |
+
+The release profile passed all 60 automated tests after these changes. Clipboard
+payload and fallback behaviour remain covered by `tests/share.test.mjs`; this
+browser check did not independently confirm the operating system clipboard.
 
 ### 2026-09-24 Milestone 2 follow-up
 

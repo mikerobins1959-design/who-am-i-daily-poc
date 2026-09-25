@@ -3,10 +3,21 @@
 The client-supplied PDF has been preserved as a lossless embedded-image
 extraction at `assets/angela-source.png`. Keep this source unchanged.
 
-## Required asset
+## Active client artwork
 
-`assets/angela_host.png` — transparent, text-free intro artwork prepared for
-Milestone 2.
+`assets/angela-final.png` — final client-supplied intro artwork, preserved
+unchanged from the supplied 633x736 PNG.
+
+This file is intentionally opaque and includes the approved `WHO AM I ?` visor
+title in its pixels. The intro uses a full-viewport background and CSS edge fade
+to blend the rectangular source into the page. Live score and streak values
+remain DOM text positioned in the lower visor band; the duplicate dynamic title
+is visually hidden but remains available as the dialog's accessible name.
+
+## Earlier prepared asset
+
+`assets/angela_host.png` — transparent, text-free intro artwork prepared during
+Milestone 2 and retained for provenance. It is no longer the active intro asset.
 
 The supplied source is a 960x1116 RGB PNG with no alpha channel. It has a white
 textured background and visor lettering already baked into its pixels. An
@@ -28,22 +39,18 @@ Issue #1 is the source of truth. Summarised:
   or cybernetic textures.
 - Visor with a cyan glow.
 
-Delivery format for `angela_host.png`: PNG with a genuine alpha channel, so the
-visor HUD and dissolve can composite over the page background.
+The earlier `angela_host.png` has a genuine alpha channel. The active
+client-supplied `angela-final.png` is intentionally opaque.
 
-## Visor HUD — overlay, not baked artwork
+## Visor HUD
 
-Per issue #1 the visor readout must be a **live DOM/CSS overlay positioned over
-the image**, never text burned into the PNG. That keeps it crisp and legible at
-every mobile width. The overlay must drive these values from game state:
+The active artwork includes the approved game title. Dynamic values remain a
+**live DOM/CSS overlay positioned over the image** so they stay current and
+legible at every mobile width. The overlay drives these values from game state:
 
-- `DAILY WHOAMIGAME`
 - `SCORE` — the current daily game's earned `state.score` (zero before a win),
   not a cumulative score.
 - `STREAK` — the locally persisted `state.stats.currentStreak`.
-
-Because the text is dynamic, the supplied artwork should leave the visor area
-clear of any pre-rendered lettering.
 
 The intro module accepts the numeric values as parameters. A future account or
 statistics service can resolve authoritative values before calling it; service
@@ -56,6 +63,8 @@ intro module.
 - Preserved embedded raster: `assets/angela-source.png`.
 - Approved prepared derivative: `assets/angela_host.png`, created for the
   Milestone 2 intro and live HUD overlay.
+- Final client artwork: `assets/angela-final.png`, supplied as an opaque PNG
+  with the approved visor title already rendered.
 - Approved edit brief: preserve Angela's outlined face, visor, and minimal neck;
   remove the textured background and embedded visor lettering; export a
   transparent PNG with a clear visor for the dynamic HTML/CSS readout.

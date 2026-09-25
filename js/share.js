@@ -1,6 +1,6 @@
-import { GAME_STATUS } from "./game.js";
+import { GAME_STATUS, formatDisplayDate } from "./game.js";
 
-const SHARE_TITLE = "Who Am I? Daily";
+const SHARE_TITLE = "Who Am I ? Daily";
 
 export function createSharePayload(state, locationHref = "") {
   if (state.gameStatus !== GAME_STATUS.WON && state.gameStatus !== GAME_STATUS.FAILED) {
@@ -16,7 +16,7 @@ export function createSharePayload(state, locationHref = "") {
 
   return {
     title: SHARE_TITLE,
-    text: `${SHARE_TITLE} — ${state.lastPlayedDate}\n${outcome}`,
+    text: `${SHARE_TITLE} — ${formatDisplayDate(state.lastPlayedDate)}\n${outcome}`,
     ...(url ? { url } : {}),
   };
 }

@@ -21,6 +21,15 @@ export function getLocalDateKey(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
+export function formatDisplayDate(dateKey) {
+  if (!isValidDateKey(dateKey)) {
+    throw new TypeError("A valid YYYY-MM-DD date key is required.");
+  }
+
+  const [year, month, day] = dateKey.split("-");
+  return `${day}/${month}/${year}`;
+}
+
 export function validatePuzzles(puzzles) {
   if (!Array.isArray(puzzles)) {
     return { valid: false, reason: "Puzzle data must be an array." };
