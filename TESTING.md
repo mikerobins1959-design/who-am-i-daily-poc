@@ -49,13 +49,28 @@ system clock.
 | GitHub project subpath | Pass — the same artifact loaded and refreshed at `/who-am-i-daily-poc/` with zero console warnings or errors |
 | Offline reload | Pass — after one connected visit and service-worker installation, stopping the server and reloading rendered the correct local `29/09/2026` missing-puzzle state and retained statistics |
 | Offline information | Pass — the FAQ dialog opened from the offline missing-puzzle state and included the installation directions |
-| Actual-device installation | Pending — manifest, icons, worker scope, and offline caching are covered by automated and desktop-browser checks; Add to Home Screen and installed-app behavior still require compatible iOS and Android device checks |
+| In-progress update | Pass — at the stable `/who-am-i-daily-poc/` scope, version A restored clue 2 with its answer choices visible; publishing version B installed a waiting worker without interrupting the active session |
+| Update activation and state | Pass — after closing the only controlled browser client and reopening, the visible version B marker loaded with the same clue 2 choices and played count 0 |
+| Offline completion after update | Pass — with the server stopped, version B reloaded from its caches, accepted the correct Ada Lovelace answer for 2 points, and recorded played 1 / wins 1 / streak 1 / best 1 / distribution 2:1 |
+| Completed offline reload | Pass — another offline reload preserved the completed result and prevented replay |
+| iPhone Safari visual render | Pass — the simulator rendered at a phone viewport; browser control could not reach the page accessibility tree, so this is visual evidence only |
+| Actual-device installation | Pending — manifest, icons, worker scope, and offline caching are covered by automated and desktop-browser checks; Add to Home Screen, standalone offline use, and secure-context native sharing still require compatible device checks |
+| Android device coverage | Pending — no Android emulator, `adb`, Android SDK emulator, or configured virtual device was available in the test environment |
 
 Project-subpath browser verification is performed against an ignored fixture at
 `.review/pwa-test-root/who-am-i-daily-poc/`. This exercises the same `dist/`
 artifact without changing production sources or repository history. After the
 server stopped, the subpath also reloaded offline to the correct missing-puzzle
 state and retained a functional FAQ dialog.
+
+The update walkthrough used the ignored `.review/m3-simulator/` fixture at the
+same loopback origin and project-subpath scope for both versions. Its test-only
+page clock selects the existing `2026-09-22` sample without changing production
+code or puzzle data. Version A and B differ by a visible fixture marker and
+service-worker fingerprint, which makes the waiting-worker transition
+observable while keeping Local Storage and worker scope stable. Evidence from
+the final offline state is retained locally at
+`.review/m3-update-offline-proof.png`; it is not part of the repository.
 
 The full game-flow walkthrough was performed 2026-09-22 in a Chromium-based
 browser. A focused integration follow-up was performed 2026-09-23 in a
