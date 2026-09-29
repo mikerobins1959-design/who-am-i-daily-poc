@@ -54,6 +54,7 @@ system clock.
 | Update activation and state | Pass — after closing the only controlled browser client and reopening, the visible version B marker loaded with the same clue 2 choices and played count 0 |
 | Offline completion after update | Pass — with the server stopped, version B reloaded from its caches, accepted the correct Ada Lovelace answer for 2 points, and recorded played 1 / wins 1 / streak 1 / best 1 / distribution 2:1 |
 | Completed offline reload | Pass — another offline reload preserved the completed result and prevented replay |
+| Stable daily option shuffle | Pass — the 22/09/2026 sample displayed Ada Lovelace sixth rather than first; refresh preserved all eight choices in the same order, clue 1, and the option lock; selecting Ada then produced the expected 3-point win with played 1 / wins 1 / streak 1 |
 | iPhone Safari visual render | Pass — the simulator rendered at a phone viewport; browser control could not reach the page accessibility tree, so this is visual evidence only |
 | Actual-device installation | Pending — manifest, icons, worker scope, and offline caching are covered by automated and desktop-browser checks; Add to Home Screen, standalone offline use, and secure-context native sharing still require compatible device checks |
 | Android device coverage | Pending — no Android emulator, `adb`, Android SDK emulator, or configured virtual device was available in the test environment |

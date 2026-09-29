@@ -12,6 +12,7 @@ import {
   parseStoredState,
   prepareStateForDate,
   revealOptions,
+  shuffleOptionsForDate,
   submitGuess,
   validatePuzzles,
 } from "../js/game.js";
@@ -57,6 +58,20 @@ test("validates the checked-in issue #3 puzzle data", async () => {
 test("rejects puzzle data with an answer that is not an exact option", () => {
   const invalid = [{ ...puzzle, answer: "ada lovelace" }];
   assert.equal(validatePuzzles(invalid).valid, false);
+});
+
+test("daily option order is stable, varied, complete, and does not mutate puzzle data", () => {
+  const originalOptions = [...puzzle.options];
+  const firstOrder = shuffleOptionsForDate("2026-09-22", puzzle.options);
+  const repeatOrder = shuffleOptionsForDate("2026-09-22", puzzle.options);
+  const nextDateOrder = shuffleOptionsForDate("2026-09-23", puzzle.options);
+
+  assert.deepEqual(repeatOrder, firstOrder);
+  assert.notDeepEqual(nextDateOrder, firstOrder);
+  assert.deepEqual(new Set(firstOrder), new Set(originalOptions));
+  assert.equal(firstOrder.length, originalOptions.length);
+  assert.deepEqual(puzzle.options, originalOptions);
+  assert.notStrictEqual(firstOrder, puzzle.options);
 });
 
 for (const [advances, expectedScore] of [

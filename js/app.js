@@ -15,6 +15,7 @@ import {
   parseStoredState,
   prepareStateForDate,
   revealOptions,
+  shuffleOptionsForDate,
   submitGuess,
   validatePuzzles,
 } from "./game.js";
@@ -327,7 +328,7 @@ function renderOptions() {
 
   if (!state.optionsVisible) return;
 
-  puzzle.options.forEach((option) => {
+  shuffleOptionsForDate(puzzle.date, puzzle.options).forEach((option) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "answer-option";

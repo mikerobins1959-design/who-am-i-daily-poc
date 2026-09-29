@@ -152,6 +152,10 @@ non-empty options, and `answer` must exactly match one of those options. The gam
 deliberately checks `selectedOption === puzzle.answer` and does not normalise
 case, punctuation, aliases, or spacing.
 
+The game displays those eight values in a deterministic shuffled order derived
+from the puzzle date and option list. The order stays the same across refreshes
+and tabs for that daily puzzle without changing the JSON or adding saved state.
+
 ### Validation when exporting from a spreadsheet
 
 The whole file is validated before the game renders anything, and a problem
