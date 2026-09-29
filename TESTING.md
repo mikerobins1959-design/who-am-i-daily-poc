@@ -34,6 +34,7 @@ and preview helpers without requiring browser automation:
 | Spoiler-free sharing | Win/loss copy, unfinished rejection, URL safety, native share, cancellation, direct copy, clipboard, and manual fallback |
 | Production packaging | Invalid JSON fails closed; only allowlisted runtime files enter `dist/`; source artwork, tests, docs, and previews stay out |
 | Hosting paths | Page, manifest, icons, scripts, worker scope, and data paths remain relative for domain-root and GitHub project-subpath hosting |
+| Development server | Public app paths, browser MIME types, host/port options, and rejection of traversal or private repository paths |
 
 ## Manual verification
 

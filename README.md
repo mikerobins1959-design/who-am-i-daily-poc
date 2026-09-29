@@ -4,15 +4,26 @@ A lightweight, mobile-first proof of concept for a daily sudden-death identity g
 
 ## Run locally
 
-The game loads its puzzle data with `fetch`, so serve the project over HTTP rather than opening `index.html` directly.
+The game loads its puzzle data with `fetch`, so serve the project over HTTP rather than opening `index.html` directly. Node.js 20 or newer is required; there are no packages to install.
 
 ```sh
-python3 -m http.server 8000
+npm run dev
 ```
 
 Then open [http://localhost:8000](http://localhost:8000).
 
-The repository also includes dependency-free tests that run on Node.js 20 or newer:
+The server listens on loopback by default. Development tools that need a
+different interface or port can pass them after `--`, for example:
+
+```sh
+npm run dev -- --host 0.0.0.0 --port 4173
+```
+
+Static responses use `Cache-Control: no-store`. If an older service worker is
+already controlling the local origin, clear that origin's site data once before
+reviewing live source changes.
+
+The repository also includes dependency-free tests:
 
 ```sh
 npm test
@@ -95,6 +106,7 @@ by the game itself, and nothing in `index.html` references it.
 ├── tests/                  Rule, state, info, intro, share, and preview regressions
 ├── tools/preview/          Development tool for viewing any date (see below)
 ├── tools/build-production.mjs  Allowlisted static production build
+├── tools/dev-server.mjs       Dependency-free local development server
 ├── tools/validate-puzzles.mjs  Schema and optional launch-date coverage check
 ├── HOSTING.md              Hosting, domain, install, and launch handoff
 └── TESTING.md              What was verified and how to re-run it

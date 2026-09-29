@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "node tools/build-production.mjs",
+    "dev": "node tools/dev-server.mjs",
     "test": "node --test",
     "validate:puzzles": "node tools/validate-puzzles.mjs"
   },
