@@ -42,6 +42,22 @@ Serve the project (`python3 -m http.server 8000`) and use
 `tools/preview/index.html` to place the app on any date without touching the
 system clock.
 
+### 2026-09-29 phone-viewport completion follow-up
+
+| Scenario | Result |
+| --- | --- |
+| In-progress clue restoration | Pass — in an isolated version B fixture dated 2026-09-22, advancing to clue 2, revealing the eight choices, and refreshing restored clue 2 and the same choices; the next-clue action remained unavailable |
+| Offline completion | Pass — after stopping the fixture server, reload retained the playable game; selecting Ada Lovelace produced a 2-point win and played 1 / wins 1 / current streak 1 / best streak 1 / distribution `2:1` |
+| Completed offline reload | Pass — refreshing the completed result retained it without replaying or incrementing statistics again |
+| Share result fallback | Pass — the result share action displayed “Result copied to clipboard”; the Copy result control displayed the same confirmation |
+| Visual result state | Pass — screenshot showed the result, share/copy buttons, and statistics clearly |
+| Native device coverage | Pending — this was UIAnnotate Chromium at an iPhone 16 Pro viewport (402×874), not native iOS; Home Screen installation, standalone offline use, and the native share sheet remain unverified. Android device coverage also remains pending |
+
+This follow-up used the isolated ignored `.review` fixture `fixture4192` with
+version B. The local Python fixture server (PID 85623) was stopped before the
+offline reload checks. Clipboard contents were not independently inspected;
+the browser confirmation is the observed evidence.
+
 ### 2026-09-29 Milestone 3 packaging follow-up
 
 | Scenario | Result |

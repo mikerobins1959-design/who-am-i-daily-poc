@@ -12,6 +12,7 @@ dist/
 *.log
 .netlify/
 .deploy-preview/
+.ui-feedback/
 
 # Local environment overrides
 .env
