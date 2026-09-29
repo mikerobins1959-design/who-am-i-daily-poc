@@ -3,14 +3,22 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#071522">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Who Am I ?">
     <meta
       name="description"
       content="Play the daily Who Am I? sudden-death guessing game."
     >
     <title>Who Am I? Daily</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon-180.png">
     <link rel="stylesheet" href="css/styles.css">
     <script type="module" src="js/app.js"></script>
     <script type="module" src="js/info.js"></script>
+    <script type="module" src="js/pwa.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to game</a>
@@ -109,6 +117,14 @@
                   A streak counts consecutive daily wins. Your streak and statistics are stored in this
                   browser on this device. Clearing this site’s browser data resets your game history,
                   streak, and statistics.
+                </p>
+              </article>
+
+              <article>
+                <h4>How do I add the game to my iPhone or iPad?</h4>
+                <p>
+                  Open the game in Safari, tap Share, choose <strong>Add to Home Screen</strong>, then
+                  tap Add.
                 </p>
               </article>
             </div>

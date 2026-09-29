@@ -1,6 +1,6 @@
 # Testing
 
-How Milestones 1 and 2 were verified, and how to re-run that verification.
+How Milestones 1–3 were verified, and how to re-run that verification.
 
 ## Automated tests
 
@@ -32,12 +32,30 @@ and preview helpers without requiring browser automation:
 | Angela intro | Eligibility, per-date session keys, preload failure, reduced motion, caller-supplied score/streak values, focus containment, and restoration |
 | Information dialog | Missing-element handling, header/footer triggers, close button, Escape dismissal, scroll lock, and focus restoration |
 | Spoiler-free sharing | Win/loss copy, unfinished rejection, URL safety, native share, cancellation, direct copy, clipboard, and manual fallback |
+| Production packaging | Invalid JSON fails closed; only allowlisted runtime files enter `dist/`; source artwork, tests, docs, and previews stay out |
+| Hosting paths | Page, manifest, icons, scripts, worker scope, and data paths remain relative for domain-root and GitHub project-subpath hosting |
 
 ## Manual verification
 
 Serve the project (`python3 -m http.server 8000`) and use
 `tools/preview/index.html` to place the app on any date without touching the
 system clock.
+
+### 2026-09-29 Milestone 3 packaging follow-up
+
+| Scenario | Result |
+| --- | --- |
+| Production artifact online | Pass — the allowlisted `dist/` artifact loaded at the domain root on loopback, refreshed successfully, and reported no browser console errors |
+| GitHub project subpath | Pass — the same artifact loaded and refreshed at `/who-am-i-daily-poc/` with zero console warnings or errors |
+| Offline reload | Pass — after one connected visit and service-worker installation, stopping the server and reloading rendered the correct local `29/09/2026` missing-puzzle state and retained statistics |
+| Offline information | Pass — the FAQ dialog opened from the offline missing-puzzle state and included the installation directions |
+| Actual-device installation | Pending — manifest, icons, worker scope, and offline caching are covered by automated and desktop-browser checks; Add to Home Screen and installed-app behavior still require compatible iOS and Android device checks |
+
+Project-subpath browser verification is performed against an ignored fixture at
+`.review/pwa-test-root/who-am-i-daily-poc/`. This exercises the same `dist/`
+artifact without changing production sources or repository history. After the
+server stopped, the subpath also reloaded offline to the correct missing-puzzle
+state and retained a functional FAQ dialog.
 
 The full game-flow walkthrough was performed 2026-09-22 in a Chromium-based
 browser. A focused integration follow-up was performed 2026-09-23 in a

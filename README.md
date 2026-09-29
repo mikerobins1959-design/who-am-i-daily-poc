@@ -1,6 +1,6 @@
-# Who Am I? Daily — Milestone 2
+# Who Am I? Daily — Milestone 3
 
-A lightweight, mobile-first proof of concept for a daily sudden-death identity game. It uses plain HTML, CSS, and JavaScript, with no build step, runtime dependencies, backend, accounts, analytics, or external services.
+A lightweight, mobile-first proof of concept for a daily sudden-death identity game. It uses plain HTML, CSS, and JavaScript, with no framework, runtime dependencies, backend, accounts, analytics, or external services. The optional production build copies an explicit static-file allowlist without bundling the application or adding runtime dependencies.
 
 ## Run locally
 
@@ -17,6 +17,18 @@ The repository also includes dependency-free tests that run on Node.js 20 or new
 ```sh
 npm test
 ```
+
+Create the allowlisted static production artifact in `dist/` with:
+
+```sh
+npm run validate:puzzles
+npm run build
+```
+
+The current repository still contains only the supplied sample puzzle. Final
+puzzle JSON and continuous launch-date coverage remain pending. See
+[`HOSTING.md`](HOSTING.md) for the build contract, install/offline behaviour,
+hosting options, and the domain/DNS inputs required before launch.
 
 ## Hosted review build
 
@@ -68,17 +80,23 @@ by the game itself, and nothing in `index.html` references it.
 ├── index.html              Page structure and game states
 ├── css/styles.css          Mobile-first presentation
 ├── data/puzzles.json       Daily puzzle content
+├── manifest.webmanifest    Install metadata and icon declarations
+├── service-worker.js       Scoped shell and validated puzzle-data caching
 ├── js/
 │   ├── config.js           Data location, storage key, date-check interval
 │   ├── game.js             Rules, scoring, dates, validation, state transitions
 │   ├── info.js             FAQ dialog lifecycle, scroll lock, and focus return
 │   ├── intro.js            Angela opener, preload, motion, and focus behavior
+│   ├── pwa.js              Scoped service-worker registration
 │   ├── session.js          Cross-tab and date-change reconciliation
 │   ├── share.js            Spoiler-free result text and browser share fallbacks
 │   └── app.js              Loading, rendering, events, persistence
 ├── assets/                 Angela production artwork and source reference
 ├── tests/                  Rule, state, info, intro, share, and preview regressions
 ├── tools/preview/          Development tool for viewing any date (see below)
+├── tools/build-production.mjs  Allowlisted static production build
+├── tools/validate-puzzles.mjs  Schema and optional launch-date coverage check
+├── HOSTING.md              Hosting, domain, install, and launch handoff
 └── TESTING.md              What was verified and how to re-run it
 ```
 
@@ -244,10 +262,10 @@ collect contact details.
 
 ## Scope boundaries
 
-This repository is a fixed-scope proof of concept. Milestone 2 is the current
+This repository is a fixed-scope proof of concept. Milestone 3 is the current
 deliverable.
 
-**Delivered across Milestones 1 and 2**
+**Implemented across Milestones 1–3**
 
 - Three-clue Sudden Death loop with 3/2/1 scoring and exact-match answers.
 - Local browser-date puzzle selection from `data/puzzles.json`.
@@ -256,6 +274,9 @@ deliverable.
 - Angela opening artwork with a dynamic score/streak overlay and safe fallbacks.
 - Spoiler-free sharing through native, clipboard, and manual-copy paths.
 - Responsive FAQ, contact, and legal information dialog with keyboard focus return.
+- Installable mobile metadata, scoped offline shell caching, and validated
+  network-first puzzle-data caching.
+- An allowlisted, dependency-free production packaging and puzzle-validation path.
 - A styled, empty ad placeholder with no ad-serving integration.
 
 See [`assets/README.md`](assets/README.md) for the Angela production asset and
@@ -265,9 +286,12 @@ source-art provenance.
 
 Accounts or login, any backend or database, server-side anti-cheat, real-time
 multiplayer, AI-generated puzzles, a puzzle-management or admin system,
-analytics, a real AdSense account or ad-serving scripts, deployment or hosting,
-app-store packaging, extra game modes, and any puzzle content beyond the
-client-provided example.
+analytics, a real AdSense account or ad-serving scripts, app-store packaging,
+extra game modes, and invented puzzle content.
+
+Production hosting activation and custom-domain/DNS configuration are pending
+Milestone 3 handoff items. They require the client decisions and account details
+listed in [`HOSTING.md`](HOSTING.md).
 
 Puzzle content is authored in the client's Google Sheet and exported to
 `data/puzzles.json`. This project consumes that file; it does not generate,

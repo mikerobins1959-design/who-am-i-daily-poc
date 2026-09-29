@@ -68,3 +68,11 @@ intro module.
 - Approved edit brief: preserve Angela's outlined face, visor, and minimal neck;
   remove the textured background and embedded visor lettering; export a
   transparent PNG with a clear visor for the dynamic HTML/CSS readout.
+
+## Install icons
+
+`assets/icons/icon.svg` is the editable, code-native install-icon source. Its
+cyan visor and question mark sit inside the standard maskable safe area. The
+192px, 512px, maskable 512px, and Apple 180px PNGs are raster exports from that
+source. These paths form replaceable brand scaffolding, so client-approved logo
+artwork can replace them later without changing manifest or page metadata.

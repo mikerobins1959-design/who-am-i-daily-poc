@@ -8,6 +8,7 @@ Thumbs.db
 # Dependencies, logs, and generated coverage
 node_modules/
 coverage/
+dist/
 *.log
 .netlify/
 .deploy-preview/

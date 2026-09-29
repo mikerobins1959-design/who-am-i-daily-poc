@@ -5,7 +5,9 @@
   "description": "Daily three-clue sudden-death identity game proof of concept.",
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "build": "node tools/build-production.mjs",
+    "test": "node --test",
+    "validate:puzzles": "node tools/validate-puzzles.mjs"
   },
   "engines": {
     "node": ">=20"
