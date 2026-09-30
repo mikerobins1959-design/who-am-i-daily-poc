@@ -1,9 +1,9 @@
 # Hosting and launch handoff
 
-This project is prepared for static hosting, but production hosting is not yet
-configured. The final puzzle export, launch date range, hosting provider, custom
-domain, and DNS provider remain client decisions. Do not describe the site as
-launch-ready until those inputs are supplied and the release checks pass.
+This project is prepared for static hosting. The checked-in schedule contains
+534 consecutive puzzles from `2026-10-20` through `2028-04-05`. Production
+domain mapping, DNS verification, certificate issuance, and final native-device
+checks remain incomplete; do not describe the site as live until they pass.
 
 ## Production artifact
 
@@ -23,11 +23,10 @@ empty `.nojekyll` file for compatibility with direct GitHub Pages publishing.
 The build stamps the service worker cache version with a deterministic content
 fingerprint, so a changed runtime artifact activates a fresh cache.
 
-After the final puzzle export is available, validate its required continuous
-date range explicitly:
+Validate the complete launch range explicitly:
 
 ```sh
-npm run validate:puzzles -- --from YYYY-MM-DD --days NUMBER_OF_DAYS
+npm run validate:puzzles -- --from 2026-10-20 --days 534
 ```
 
 The build validates structure and exact answer-option matching. The coverage
@@ -36,40 +35,27 @@ missing. It does not invent or duplicate puzzle content.
 
 ## Current hosting position
 
-The repository is private and GitHub Pages is not configured; the read-only
-Pages API check returned `404` on 29 September 2026. GitHub documents Pages as
-available for public repositories on GitHub Free, while private repositories
-require GitHub Pro, Team, or Enterprise. Keeping the repository private while
-using GitHub Pages therefore depends on the repository owner's eligible paid
-plan. Making the repository public is a separate client decision.
+`netlify.toml` configures Node 20, validates the full date range, builds the
+allowlisted artifact, and publishes `dist/`. A Git-connected deployment still
+requires the release branch to be pushed and selected in the existing
+Mike-owned Netlify site, `dulcet-bonbon-2c2a71.netlify.app`. The prepared
+Milestone 3 branch remains local until delivery is approved.
 
-For a free-hosting route that keeps the source repository private, the client
-can instead choose a static host under Mike's own account and upload `dist/` or
-connect the repository after reviewing that host's permissions. No automatic
-publishing workflow is included; a Git push does not deploy this project.
+## Domain and DNS status
 
-References:
+The production domain is `thewhoamigame.games`, with `www.thewhoamigame.games`
+as the additional host, and Namecheap provides DNS. Mike has configured:
 
-- [GitHub Pages availability](https://docs.github.com/en/pages/getting-started-with-github-pages)
-- [GitHub Pages publishing sources](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
-- [GitHub Pages custom domains](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages)
+- ALIAS `@` → `apex-loadbalancer.netlify.com`
+- CNAME `www` → `dulcet-bonbon-2c2a71.netlify.app`
 
-## Domain and DNS inputs still required
-
-No custom domain or DNS provider has been supplied. Before any domain setup,
-obtain all of the following from the client:
-
-- the exact domain or subdomain to publish, including whether the canonical URL
-  should use the apex domain or `www`;
-- the selected hosting provider and site/project owned by Mike;
-- the DNS provider or registrar and confirmation that Mike controls it;
-- the current DNS records for the chosen host name, so existing mail and web
-  services are not overwritten;
-- the desired redirect between apex and `www`, if both should resolve.
-
-Add the domain in the selected host before changing DNS, then use only the DNS
-targets that host provides. Do not invent a `CNAME`, add a repository `CNAME`
-file, or alter DNS before these inputs and the hosting choice are confirmed.
+DNS resolved to Netlify on 30 September 2026. At that check, the Netlify host
+and both custom hosts returned `404`, while the custom hosts presented a
+certificate hostname mismatch. The remaining hosting work is to publish the
+Milestone 3 artifact from the selected branch, confirm both custom domains are
+attached to that same Netlify site, and wait for Netlify to provision a matching
+certificate. Do not add different DNS targets unless Netlify reports that the
+current records are invalid.
 
 ## Installable and offline behaviour
 
@@ -96,3 +82,7 @@ For each release, confirm the generated service worker fingerprint changes when
 runtime assets change, run the release checks, serve `dist/` at both `/` and a
 project subpath, and verify install, reload, same-day progress, offline reload,
 and the intentional missing-date state before publishing.
+
+Native iOS Add to Home Screen, standalone offline use, and native sharing remain
+pending. Android installation, standalone offline use, and native sharing are
+also unverified because no Android emulator or device was available.

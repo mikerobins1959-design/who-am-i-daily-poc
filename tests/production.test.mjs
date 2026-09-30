@@ -108,6 +108,17 @@ test("production document and manifest use root- and subpath-safe local referenc
   assert.equal(manifest.icons.some((icon) => icon.src.startsWith("/")), false);
 });
 
+test("Netlify validates the full schedule before publishing dist", async () => {
+  const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const config = await readFile(path.join(projectRoot, "netlify.toml"), "utf8");
+
+  assert.match(config, /command = "npm run validate:puzzles -- --from 2026-10-20 --days 534 && npm run build"/);
+  assert.match(config, /publish = "dist"/);
+  assert.match(config, /NODE_VERSION = "20"/);
+  assert.match(config, /for = "\/service-worker\.js"/);
+  assert.match(config, /for = "\/data\/puzzles\.json"/);
+});
+
 async function listFiles(root, current = "") {
   const entries = await readdir(path.join(root, current), { withFileTypes: true });
   const files = [];

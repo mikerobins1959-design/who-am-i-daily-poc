@@ -90,9 +90,12 @@
     <iframe id="app-frame" title="Who Am I? Daily preview"></iframe>
 
     <script type="module">
-      import { PREVIEW_STORAGE_KEY, resolvePreviewDate } from "./storage.js";
-
-      const DATE_KEY = "who-am-i-preview-date";
+      import {
+        DEFAULT_PREVIEW_DATE,
+        PREVIEW_DATE_KEY,
+        PREVIEW_STORAGE_KEY,
+        resolvePreviewDate,
+      } from "./storage.js";
 
       const frame = document.querySelector("#app-frame");
       const dateInput = document.querySelector("#preview-date");
@@ -104,10 +107,13 @@
       setPresentation(presentation, false);
 
       // Keep the selected fixture date across toolbar reloads.
-      dateInput.value = resolvePreviewDate(sessionStorage.getItem(DATE_KEY));
+      dateInput.value = resolvePreviewDate(
+        sessionStorage.getItem(PREVIEW_DATE_KEY),
+        new Date(`${DEFAULT_PREVIEW_DATE}T12:00:00`),
+      );
 
       async function load(clearSavedState) {
-        sessionStorage.setItem(DATE_KEY, dateInput.value);
+        sessionStorage.setItem(PREVIEW_DATE_KEY, dateInput.value);
 
         if (clearSavedState) {
           localStorage.removeItem(PREVIEW_STORAGE_KEY);

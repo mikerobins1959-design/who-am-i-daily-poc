@@ -1,6 +1,8 @@
 export const APP_STORAGE_KEY = "who-am-i-daily-state";
 export const PREVIEW_STORAGE_PREFIX = "who-am-i-preview:";
 export const PREVIEW_STORAGE_KEY = `${PREVIEW_STORAGE_PREFIX}${APP_STORAGE_KEY}`;
+export const PREVIEW_DATE_KEY = "who-am-i-preview-date-v2";
+export const DEFAULT_PREVIEW_DATE = "2026-10-20";
 
 export function mapPreviewStorageKey(key) {
   return `${PREVIEW_STORAGE_PREFIX}${String(key)}`;

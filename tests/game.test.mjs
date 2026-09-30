@@ -46,13 +46,13 @@ test("formats a stored date key for UK display without changing the key", () => 
   assert.throws(() => formatDisplayDate("22/09/2026"), /valid YYYY-MM-DD/);
 });
 
-test("validates the checked-in issue #3 puzzle data", async () => {
+test("validates the checked-in daily puzzle data", async () => {
   const raw = await readFile(new URL("../data/puzzles.json", import.meta.url), "utf8");
   const puzzles = JSON.parse(raw);
 
   assert.deepEqual(validatePuzzles(puzzles), { valid: true, reason: "" });
-  assert.equal(findPuzzleForDate(puzzles, "2026-09-22")?.answer, "Ada Lovelace");
-  assert.equal(findPuzzleForDate(puzzles, "2026-09-23"), null);
+  assert.equal(findPuzzleForDate(puzzles, "2026-10-20")?.answer, "Denzel Washington");
+  assert.equal(findPuzzleForDate(puzzles, "2026-10-19"), null);
 });
 
 test("rejects puzzle data with an answer that is not an exact option", () => {

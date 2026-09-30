@@ -7,6 +7,7 @@
   "scripts": {
     "build": "node tools/build-production.mjs",
     "dev": "node tools/dev-server.mjs",
+    "import:puzzles": "node tools/import-client-questions.mjs",
     "test": "node --test",
     "validate:puzzles": "node tools/validate-puzzles.mjs"
   },

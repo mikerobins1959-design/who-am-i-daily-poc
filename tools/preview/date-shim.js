@@ -3,6 +3,7 @@ import { GAME_STATUS } from "../../js/game.js";
 import { getIntroStorageKey, runDailyIntro } from "../../js/intro.js";
 import {
   APP_STORAGE_KEY,
+  PREVIEW_DATE_KEY,
   createPreviewStorage,
   resolvePreviewIntroValues,
 } from "./storage.js?intro-replay=1";
@@ -17,7 +18,7 @@ import {
     value: previewStorage,
   });
 
-  const dateKey = window.sessionStorage.getItem("who-am-i-preview-date");
+  const dateKey = window.sessionStorage.getItem(PREVIEW_DATE_KEY);
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateKey ?? "")) {
     const NativeDate = window.Date;
     const fixedValue = `${dateKey}T12:00:00`;

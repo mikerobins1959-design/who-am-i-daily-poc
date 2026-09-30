@@ -53,7 +53,9 @@ const elements = {
   statWins: document.querySelector("#stat-wins"),
   statCurrentStreak: document.querySelector("#stat-current-streak"),
   statMaxStreak: document.querySelector("#stat-max-streak"),
+  missingTitle: document.querySelector("#missing-title"),
   missingDate: document.querySelector("#missing-date"),
+  missingDetail: document.querySelector("#missing-detail"),
   errorMessage: document.querySelector("#error-message"),
   storageWarning: document.querySelector("#storage-warning"),
   angelaIntro: document.querySelector("#angela-intro"),
@@ -441,6 +443,14 @@ function renderMissingPuzzle() {
   showView(elements.missingState);
   elements.statsPanel.hidden = false;
   elements.missingDate.textContent = formatDisplayDate(activeDateKey);
+  const launchDate = puzzles[0]?.date;
+  const beforeLaunch = launchDate && activeDateKey < launchDate;
+  elements.missingTitle.textContent = beforeLaunch
+    ? `Daily games begin on ${formatDisplayDate(launchDate)}`
+    : "Today’s puzzle isn’t available";
+  elements.missingDetail.textContent = beforeLaunch
+    ? `The first puzzle launches on ${formatDisplayDate(launchDate)}.`
+    : "Please check back soon.";
   renderStats(state?.stats ?? createDefaultStats());
   renderStorageWarning();
   announce(`No puzzle is scheduled for ${formatDisplayDate(activeDateKey)}.`);

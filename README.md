@@ -36,15 +36,15 @@ npm run validate:puzzles
 npm run build
 ```
 
-The current repository still contains only the supplied sample puzzle. Final
-puzzle JSON and continuous launch-date coverage remain pending. See
-[`HOSTING.md`](HOSTING.md) for the build contract, install/offline behaviour,
-hosting options, and the domain/DNS inputs required before launch.
+The checked-in schedule contains 534 client-supplied puzzles from `2026-10-20`
+through `2028-04-05`. See [`HOSTING.md`](HOSTING.md) for the build contract,
+install/offline behaviour, and the remaining domain/DNS checks.
 
-## Hosted review build
+## Milestone 2 hosted review build
 
 [who-am-i-daily-review.netlify.app](https://who-am-i-daily-review.netlify.app)
-opens the `2026-09-22` sample puzzle directly in a top-level HTTPS page. It uses
+is the earlier Milestone 2 sample deployment. It opens the `2026-09-22` sample
+puzzle directly in a top-level HTTPS page. It uses
 an isolated browser-storage namespace and fixed review date, so it does not
 change the production game's local-date behaviour or saved state. The small
 **Review build · sample puzzle** menu can replay the Angela intro or reset the
@@ -68,8 +68,9 @@ http://localhost:8000/tools/preview/index.html
 Pick a date to run the real application with its clock fixed to that day. You can
 also paste a saved-state JSON object to resume from a specific situation, which
 is how the streak and refresh behaviour in `TESTING.md` was verified.
-The repository currently contains one client-provided sample puzzle, dated
-`2026-09-22`; use that date to review a playable game.
+The preview defaults to the first scheduled puzzle, `2026-10-20`. The final
+scheduled date is `2028-04-05`; use `2028-04-06` to inspect the intentional
+missing-puzzle state after the current range.
 
 **Replay intro cleanly** replays Angela over the real framed app and hides the
 development toolbar for screenshots. It clears only the preview intro's
@@ -103,11 +104,14 @@ by the game itself, and nothing in `index.html` references it.
 │   ├── share.js            Spoiler-free result text and browser share fallbacks
 │   └── app.js              Loading, rendering, events, persistence
 ├── assets/                 Angela production artwork and source reference
+├── client-handoff/         Corrected source questions and correction record
 ├── tests/                  Rule, state, info, intro, share, and preview regressions
 ├── tools/preview/          Development tool for viewing any date (see below)
 ├── tools/build-production.mjs  Allowlisted static production build
 ├── tools/dev-server.mjs       Dependency-free local development server
+├── tools/import-client-questions.mjs  Reproducible source-to-runtime import
 ├── tools/validate-puzzles.mjs  Schema and optional launch-date coverage check
+├── netlify.toml            Netlify build, publish directory, and cache policy
 ├── HOSTING.md              Hosting, domain, install, and launch handoff
 └── TESTING.md              What was verified and how to re-run it
 ```
@@ -119,6 +123,22 @@ and the Local Storage boundary. Puzzle content stays entirely in
 `data/puzzles.json`, separate from both.
 
 ## Add a daily puzzle
+
+The corrected maintenance source is `client-handoff/questions.json`. Before the
+schedule is published, regenerate the runtime file with:
+
+```sh
+npm run import:puzzles
+```
+
+The importer preserves each category's source order, deterministically mixes
+categories, keeps repeated identities with different clues, combines `options`
+and `alt_answers`, and removes only exact duplicate gameplay content. The
+checked-in source currently contains no such duplicates. A focused regression
+test proves that rerunning the importer produces the committed 534-day schedule.
+
+After any dated puzzle has gone live, preserve published date assignments and
+append future puzzles instead of rerunning the mixer over changed source data.
 
 Add one object to the array in `data/puzzles.json`. Dates are matched to the player's local browser date and must use `YYYY-MM-DD` format. Do not reuse a date or duplicate another day's content to fill a gap.
 
@@ -305,10 +325,10 @@ multiplayer, AI-generated puzzles, a puzzle-management or admin system,
 analytics, a real AdSense account or ad-serving scripts, app-store packaging,
 extra game modes, and invented puzzle content.
 
-Production hosting activation and custom-domain/DNS configuration are pending
-Milestone 3 handoff items. They require the client decisions and account details
-listed in [`HOSTING.md`](HOSTING.md).
+The production Netlify site and Namecheap records are selected and documented.
+Publishing the Milestone 3 branch, resolving the current 404/certificate state,
+and completing native-device checks remain pending; see [`HOSTING.md`](HOSTING.md).
 
 Puzzle content is authored in the client's Google Sheet and exported to
-`data/puzzles.json`. This project consumes that file; it does not generate,
-repeat, or invent puzzle content.
+`client-handoff/questions.json`. The reproducible importer creates the fixed
+daily schedule in `data/puzzles.json`; it does not invent puzzle content.

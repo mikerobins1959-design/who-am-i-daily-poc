@@ -35,12 +35,30 @@ and preview helpers without requiring browser automation:
 | Production packaging | Invalid JSON fails closed; only allowlisted runtime files enter `dist/`; source artwork, tests, docs, and previews stay out |
 | Hosting paths | Page, manifest, icons, scripts, worker scope, and data paths remain relative for domain-root and GitHub project-subpath hosting |
 | Development server | Public app paths, browser MIME types, host/port options, and rejection of traversal or private repository paths |
+| Client dataset import | Exact source conversion, deterministic category mixing, repeat spacing, duplicate handling, consecutive dates, and committed-output reproduction |
 
 ## Manual verification
 
 Serve the project (`python3 -m http.server 8000`) and use
 `tools/preview/index.html` to place the app on any date without touching the
 system clock.
+
+### 2026-09-30 production dataset follow-up
+
+| Scenario | Result |
+| --- | --- |
+| Corrected source import | Pass — 534 corrected source records produced 534 runtime puzzles with no exact duplicate content removed |
+| Schedule coverage | Pass — every local date from `2026-10-20` through `2028-04-05` is present exactly once |
+| Category and identity spacing | Pass — source order is retained within each category, adjacent days do not share a category, and repeated answer labels are at least 31 days apart |
+| First scheduled game | Pass — desktop in-app browser preview loaded Denzel Washington on `2026-10-20`; advancing to clue 2, revealing eight choices, and selecting the correct answer awarded 2 points with played 1 / wins 1 / streak 1 |
+| Final scheduled game | Pass — desktop in-app browser preview loaded Belisarius on `2028-04-05` |
+| Prelaunch state | Pass — the normal page on `30/09/2026` and preview on `2026-10-19` both named the `20/10/2026` launch date |
+| Date after schedule | Pass — desktop in-app browser preview showed the intentional unavailable state on `2028-04-06` |
+
+The browser walkthrough used the isolated date preview and is not native-device
+evidence. Native iOS and Android installation, standalone offline use, and share
+sheet checks remain pending. The screenshot is retained locally at
+`.review/m3-import-launch-result.png` and is excluded from the repository.
 
 ### 2026-09-29 phone-viewport completion follow-up
 
