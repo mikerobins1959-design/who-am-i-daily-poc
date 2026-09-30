@@ -326,8 +326,10 @@ analytics, a real AdSense account or ad-serving scripts, app-store packaging,
 extra game modes, and invented puzzle content.
 
 The production Netlify site and Namecheap records are selected and documented.
-Publishing the Milestone 3 branch, resolving the current 404/certificate state,
-and completing native-device checks remain pending; see [`HOSTING.md`](HOSTING.md).
+Publishing the Milestone 3 branch and verifying the live HTTPS deployment and
+certificate remain pending. The completed iOS Simulator checks are accepted for
+this release; Mike will perform the non-blocking Android follow-up. See
+[`HOSTING.md`](HOSTING.md).
 
 Puzzle content is authored in the client's Google Sheet and exported to
 `client-handoff/questions.json`. The reproducible importer creates the fixed

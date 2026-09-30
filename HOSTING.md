@@ -2,8 +2,8 @@
 
 This project is prepared for static hosting. The checked-in schedule contains
 534 consecutive puzzles from `2026-10-20` through `2028-04-05`. Production
-domain mapping, DNS verification, certificate issuance, and final native-device
-checks remain incomplete; do not describe the site as live until they pass.
+domain mapping, certificate issuance, and the live HTTPS deployment check remain
+incomplete; do not describe the site as live until they pass.
 
 ## Production artifact
 
@@ -39,7 +39,8 @@ missing. It does not invent or duplicate puzzle content.
 allowlisted artifact, and publishes `dist/`. A Git-connected deployment still
 requires the release branch to be pushed and selected in the existing
 Mike-owned Netlify site, `dulcet-bonbon-2c2a71.netlify.app`. The prepared
-Milestone 3 branch remains local until delivery is approved.
+release branch is `codex/milestone-3`; select that branch for the production
+deployment after it is available on GitHub.
 
 ## Domain and DNS status
 
@@ -83,6 +84,10 @@ runtime assets change, run the release checks, serve `dist/` at both `/` and a
 project subpath, and verify install, reload, same-day progress, offline reload,
 and the intentional missing-date state before publishing.
 
-Native iOS Add to Home Screen, standalone offline use, and native sharing remain
-pending. Android installation, standalone offline use, and native sharing are
-also unverified because no Android emulator or device was available.
+Native iOS Add to Home Screen, standalone offline use, sharing, and service-worker
+updates passed the accepted iOS Simulator release checks documented in
+`TESTING.md`. A physical iPhone check was not performed and is not a release
+blocker. Mike will perform the Android install, offline, and sharing follow-up;
+that client check also does not block publishing this branch. Native sharing on
+the actual production HTTPS URL and the live domain/certificate state still need
+verification after deployment.

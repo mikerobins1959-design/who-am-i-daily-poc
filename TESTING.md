@@ -43,6 +43,60 @@ Serve the project (`python3 -m http.server 8000`) and use
 `tools/preview/index.html` to place the app on any date without touching the
 system clock.
 
+### 2026-09-30 native iOS Simulator PWA follow-up
+
+Environment: Xcode 26.6 iOS Simulator, dedicated **iPhone 17 Pro** device
+(`WhoAmI QA · iPhone 17 Pro`), **iOS 26.5 (23F77)**, real Mobile Safari and a
+Home Screen web app (`com.apple.webapp`). Tested commit `6df0779`; `npm test`
+passed 82/82 and `npm run build` reproduced the committed fingerprint
+`build-b0721e4b2611`.
+
+Origin: `http://127.0.0.1:4320/` (loopback, a browser secure context), served
+at the domain root from an ignored fixture in `.review/ios-sim-2026-09-30/`.
+The fixture copies `dist/` unchanged except for an injected test-only page clock
+starting at `2026-10-20 12:00` local time, a visible version label, and a
+per-version service-worker fingerprint (`iossim-a-…` / `iossim-b-…`). Production
+dates, puzzle data, and `dist/` were not modified. The fixture server sends
+`max-age=0, must-revalidate`, matching `netlify.toml`.
+
+| Check | Result |
+| --- | --- |
+| 1. Safari installation | **Pass** — Safari loaded the 20/10/2026 Denzel Washington puzzle; the server log showed `service-worker.js` followed by the full shell and `data/puzzles.json` precache. Safari **••• → Share → View More → Add to Home Screen** proposed the name “Who Am I ?”, the app icon, and *Open as Web App* enabled. The Home Screen showed the icon labelled “Who Am I ?” |
+| 2. Standalone launch | **Pass** — the Home Screen icon opened the app with no Safari address bar or toolbar. At rest, content sat below the status bar/Dynamic Island, and the footer FAQ button cleared the home-indicator area. Page scrolling worked. The Info dialog opened below the status bar, its body scrolled through FAQ, contact, social links, and disclaimer while Close stayed visible, and Close returned to the same scroll position |
+| 3. Saved progress | **Pass** — Reveal next clue → Clue 2, then Reveal Multiple Choices showed eight choices and removed *Reveal next clue*. After the app was closed from the app switcher (no `com.apple.webapp` process remained) and reopened (new PID), it restored Clue 2 of 3, worth 2 pts, the same eight choices in the same order, and no further-clue control |
+| 4. Offline cold launch | **Pass** — the only server process for the origin was stopped; `lsof` showed nothing listening on port 4320 and `curl` failed with connection refused. The installed app was closed from the app switcher, its process was confirmed gone, and it was relaunched from the Home Screen as a new process. It loaded the shell, puzzle, and saved Clue 2 state offline. Selecting Denzel Washington showed “Correct” for 2 points with played 1 / wins 1 / current streak 1 / best streak 1 / distribution `2:1`. A second offline process kill and relaunch showed the completed result, no answer controls, and unchanged statistics |
+| 5. Native sharing | **Pass (loopback)** — the game's **Share result** button opened the native iOS share sheet with a text item titled “Who Am I ? Daily — 20/10/2026”. Tapping outside the sheet cancelled it; the result, both buttons, and statistics remained usable. **Copy result** separately showed “Result copied to your clipboard.” and `simctl pbpaste` read exactly `Who Am I ? Daily — 20/10/2026` / `Solved on clue 2 of 3 · 2/3 points` (a sentinel was placed first). Re-opening Share result and choosing the sheet's local Copy action showed “Result shared.” with identical text. No answer, clues, options, streak, or URL were included, and nothing was sent |
+| 6. App update | **Pass** — with the app closed, connectivity was restored by serving version B (`iossim-b-build-b0721e4b2611`) on the same origin. The first reopen still showed Version A while the server log showed B's worker and full shell precache (installed, waiting). After another app-switcher close and reopen, the page showed “Version B · update marker” with the completed 2-point result and played 1 / wins 1 / streaks 1 / distribution `2:1` preserved |
+
+Observations (not defects):
+
+- The Home Screen app did not reuse Safari's service worker. On its first
+  launch it re-downloaded the shell and registered its own worker, so a
+  player's first launch of the installed app must be online. Whether iOS copies
+  Safari's Local Storage into the installed app was not tested, because no
+  Safari progress existed before installation.
+- In standalone mode the status bar is translucent. Scrolled content passes
+  beneath the clock (the page uses neither `viewport-fit=cover` nor
+  `env(safe-area-inset-*)`). Nothing is clipped at rest; this is cosmetic.
+- The first standalone launch showed a blank white screen for a few seconds
+  before first paint in the simulator. Later cold launches, including offline
+  ones, rendered normally.
+
+Limits of this evidence:
+
+- This is simulator evidence, not a physical iPhone. The six simulator checks
+  are accepted for this release; a physical-iPhone repeat was not performed and
+  is not a release blocker. Individual messaging targets were not exercised.
+- Sharing was verified on a loopback secure context, where the game correctly
+  omits the page URL. The HTTPS production payload, which appends the clean
+  public URL, remains unverified on iOS.
+- Android was out of scope and remains unverified. Mike will perform that
+  non-blocking client follow-up.
+
+The fixture, its README, and the 25 screenshots (`screenshots/00-…` to
+`24-…`) are kept locally in the ignored `.review/ios-sim-2026-09-30/`
+directory and are not part of the repository or production build.
+
 ### 2026-09-30 production dataset follow-up
 
 | Scenario | Result |
