@@ -43,6 +43,18 @@ Serve the project (`python3 -m http.server 8000`) and use
 `tools/preview/index.html` to place the app on any date without touching the
 system clock.
 
+### 2026-10-02 Android client follow-up
+
+The client reports that gameplay, clue progression, scoring, and PWA
+installation passed on Android. Offline cold launch and native sharing were not
+reported in that check.
+
+The replacement full-colour 512px Angela icon image was inspected directly.
+Separately, the mobile header was visually checked in the in-app browser at
+360px; the wordmark and its keyboard focus outline remained fully visible
+without clipping. The local reference screenshot is retained under ignored
+`.review/` evidence and is not shipped.
+
 ### 2026-09-30 native iOS Simulator PWA follow-up
 
 Environment: Xcode 26.6 iOS Simulator, dedicated **iPhone 17 Pro** device

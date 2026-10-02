@@ -71,8 +71,8 @@ intro module.
 
 ## Install icons
 
-`assets/icons/icon.svg` is the editable, code-native install-icon source. Its
-cyan visor and question mark sit inside the standard maskable safe area. The
-192px, 512px, maskable 512px, and Apple 180px PNGs are raster exports from that
-source. These paths form replaceable brand scaffolding, so client-approved logo
-artwork can replace them later without changing manifest or page metadata.
+The 192px, 512px, maskable 512px, and Apple 180px PNGs are square derivatives
+of the approved full-colour `assets/angela-final.png` artwork. They use a centred
+crop that keeps Angela's face and visor in the maskable safe region. The source
+artwork remains unchanged; replace the derived files together if the client
+later supplies a dedicated app icon.

@@ -8,7 +8,6 @@ export const SHELL_PATHS = Object.freeze([
   "./manifest.webmanifest",
   "./css/styles.css",
   "./assets/angela-final.png",
-  "./assets/icons/icon.svg",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
   "./assets/icons/icon-maskable-512.png",

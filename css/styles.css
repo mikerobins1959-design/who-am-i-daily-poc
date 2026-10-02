@@ -151,11 +151,13 @@ h2 {
 }
 
 .wordmark-title {
+  padding-block: 0.18rem;
   color: #e6fcff;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 1.02rem;
   font-weight: 800;
   letter-spacing: 0.01em;
+  line-height: 1.2;
   text-shadow: 0 0 14px rgb(115 224 235 / 28%);
   white-space: nowrap;
 }
