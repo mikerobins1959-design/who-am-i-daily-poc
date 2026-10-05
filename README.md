@@ -1,6 +1,6 @@
 # Who Am I? Daily — Milestone 3
 
-A lightweight, mobile-first proof of concept for a daily sudden-death identity game. It uses plain HTML, CSS, and JavaScript, with no framework, runtime dependencies, backend, accounts, analytics, or external services. The optional production build copies an explicit static-file allowlist without bundling the application or adding runtime dependencies.
+A lightweight, mobile-first proof of concept for a daily sudden-death identity game. It uses plain HTML, CSS, and JavaScript, with no framework, runtime dependencies, backend, accounts, analytics, or external services. The optional production build .copies an explicit static-file allowlist without bundling the application or adding runtime dependencies.
 
 ## Run locally
 
