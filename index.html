@@ -121,10 +121,12 @@
               </article>
 
               <article>
-                <h4>How do I add the game to my iPhone or iPad?</h4>
+                <h4>How do I install the game?</h4>
                 <p>
-                  Open the game in Safari, tap Share, choose <strong>Add to Home Screen</strong>, then
-                  tap Add.
+                  On a supported Android or desktop browser, choose <strong>Install app</strong> on
+                  this page or use the browser’s install menu. On iPhone or iPad, open the game in
+                  Safari, tap Share, choose <strong>Add to Home Screen</strong>, turn on
+                  <strong>Open as Web App</strong>, then tap Add.
                 </p>
               </article>
             </div>
@@ -180,7 +182,12 @@
       <div class="page-shell header-inner">
         <div class="brand-lockup">
           <div id="brand-logo-slot" class="brand-logo-slot" aria-hidden="true" hidden></div>
-          <a class="wordmark" href="./" aria-label="Who Am I? Daily home">
+          <a
+            class="wordmark"
+            href="./"
+            aria-label="Who Am I? Daily home"
+            title="Return to today’s game"
+          >
             <span class="wordmark-title">Who Am I ?</span>
             <span class="wordmark-tag">Daily</span>
           </a>
@@ -366,15 +373,28 @@
     <footer class="site-footer">
       <div class="page-shell footer-inner">
         <p>One identity. Three clues. One chance.</p>
-        <button
-          class="footer-info-button"
-          type="button"
-          data-info-open
-          aria-haspopup="dialog"
-          aria-controls="info-dialog"
-        >
-          FAQ, contact &amp; legal
-        </button>
+        <div class="footer-actions">
+          <button
+            id="install-button"
+            class="footer-info-button"
+            type="button"
+            aria-controls="install-guidance"
+            aria-expanded="false"
+            hidden
+          >
+            Install app
+          </button>
+          <button
+            class="footer-info-button"
+            type="button"
+            data-info-open
+            aria-haspopup="dialog"
+            aria-controls="info-dialog"
+          >
+            FAQ, contact &amp; legal
+          </button>
+        </div>
+        <p id="install-guidance" class="install-guidance" aria-live="polite" hidden></p>
       </div>
     </footer>
   </body>

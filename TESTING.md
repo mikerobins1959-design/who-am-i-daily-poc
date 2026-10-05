@@ -34,6 +34,7 @@ and preview helpers without requiring browser automation:
 | Spoiler-free sharing | Win/loss copy, unfinished rejection, URL safety, native share, cancellation, direct copy, clipboard, and manual fallback |
 | Production packaging | Invalid JSON fails closed; only allowlisted runtime files enter `dist/`; source artwork, tests, docs, and previews stay out |
 | Hosting paths | Page, manifest, icons, scripts, worker scope, and data paths remain relative for domain-root and GitHub project-subpath hosting |
+| Install guidance | Standalone detection, manual Safari guidance, browser prompt handling, and accepted installation state |
 | Development server | Public app paths, browser MIME types, host/port options, and rejection of traversal or private repository paths |
 | Client dataset import | Exact source conversion, deterministic category mixing, repeat spacing, duplicate handling, consecutive dates, and committed-output reproduction |
 
@@ -42,6 +43,23 @@ and preview helpers without requiring browser automation:
 Serve the project (`python3 -m http.server 8000`) and use
 `tools/preview/index.html` to place the app on any date without touching the
 system clock.
+
+### 2026-10-05 mobile navigation and install follow-up
+
+At 360px, dismissing the intro restored programmatic focus to the main game
+heading without the browser’s uneven default focus frame. Interactive controls
+retained their visible focus styles. From the bottom of the page, the header
+home link reloaded `./` at the top without adding any state-reset behavior. The
+Install app control displayed its Safari Add to Home Screen fallback guidance
+without console errors. Native browser-prompt behavior is covered by the
+focused automated controller test; it was not manually re-triggered in this
+check. The local screenshot is retained under ignored `.review/` evidence.
+
+A read-only production routing check confirmed that HTTP requests for the apex
+and `www` hosts return `301` redirects to HTTPS on the same host. The HTTPS
+`www` route finishes at the apex with `200`, the certificate is valid, and the
+response includes HSTS `max-age=31536000`. No Netlify setting was changed as
+part of this verification.
 
 ### 2026-10-02 Android client follow-up
 

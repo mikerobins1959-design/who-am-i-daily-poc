@@ -106,6 +106,7 @@ test("production document and manifest use root- and subpath-safe local referenc
   assert.equal(manifest.start_url.startsWith("/"), false);
   assert.equal(manifest.scope.startsWith("/"), false);
   assert.equal(manifest.icons.some((icon) => icon.src.startsWith("/")), false);
+  assert.match(html, /<a\s+class="wordmark"\s+href="\.\/"/);
 });
 
 test("Netlify validates the full schedule before publishing dist", async () => {
@@ -117,6 +118,7 @@ test("Netlify validates the full schedule before publishing dist", async () => {
   assert.match(config, /NODE_VERSION = "20"/);
   assert.match(config, /for = "\/service-worker\.js"/);
   assert.match(config, /for = "\/data\/puzzles\.json"/);
+  assert.match(config, /Content-Type = "application\/manifest\+json"/);
 });
 
 async function listFiles(root, current = "") {

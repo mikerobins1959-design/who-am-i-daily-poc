@@ -15,7 +15,13 @@ import {
   isExcludedRequest,
   shouldHandleRequest,
 } from "../service-worker.js";
-import { getServiceWorkerUrl, registerPwa, shouldRegisterPwa } from "../js/pwa.js";
+import {
+  createInstallController,
+  getServiceWorkerUrl,
+  isStandalone,
+  registerPwa,
+  shouldRegisterPwa,
+} from "../js/pwa.js";
 
 const validPuzzles = [
   {
@@ -82,6 +88,21 @@ class MemoryCacheStorage {
   }
 }
 
+class ElementStub extends EventTarget {
+  hidden = true;
+  disabled = false;
+  textContent = "";
+  attributes = new Map();
+
+  setAttribute(name, value) {
+    this.attributes.set(name, value);
+  }
+
+  getAttribute(name) {
+    return this.attributes.get(name) ?? null;
+  }
+}
+
 function toKey(input, ignoreSearch = false) {
   const value = typeof input === "string" ? input : input.url;
   const url = new URL(value);
@@ -96,6 +117,90 @@ function jsonResponse(value, init = {}) {
     ...init,
   });
 }
+
+test("install UI falls back to guidance and uses an available browser prompt", async () => {
+  const windowApi = new EventTarget();
+  const button = new ElementStub();
+  const guidance = new ElementStub();
+  const controller = createInstallController({
+    windowApi,
+    navigatorApi: {},
+    matchMediaApi: () => ({ matches: false }),
+    button,
+    guidance,
+  });
+
+  assert.equal(button.hidden, false);
+  button.dispatchEvent(new Event("click"));
+  assert.equal(guidance.hidden, false);
+  assert.match(guidance.textContent, /Safari.*Add to Home Screen.*Open as Web App/);
+  assert.equal(button.getAttribute("aria-expanded"), "true");
+
+  let promptCount = 0;
+  const promptEvent = new Event("beforeinstallprompt", { cancelable: true });
+  Object.defineProperties(promptEvent, {
+    prompt: { value: async () => { promptCount += 1; } },
+    userChoice: { value: Promise.resolve({ outcome: "accepted" }) },
+  });
+  windowApi.dispatchEvent(promptEvent);
+
+  assert.equal(promptEvent.defaultPrevented, true);
+  assert.equal(guidance.hidden, true);
+  button.dispatchEvent(new Event("click"));
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(promptCount, 1);
+  assert.equal(button.hidden, true);
+  assert.equal(guidance.hidden, true);
+
+  controller.dispose();
+});
+
+test("install UI stays hidden in standalone mode", () => {
+  assert.equal(isStandalone({ navigatorApi: { standalone: true } }), true);
+  assert.equal(
+    isStandalone({ navigatorApi: {}, matchMediaApi: () => ({ matches: true }) }),
+    true,
+  );
+
+  const button = new ElementStub();
+  const guidance = new ElementStub();
+  createInstallController({
+    windowApi: new EventTarget(),
+    navigatorApi: { standalone: true },
+    button,
+    guidance,
+  });
+
+  assert.equal(button.hidden, true);
+  assert.equal(guidance.hidden, true);
+});
+
+test("a declined browser install prompt reveals a retry path", async () => {
+  const windowApi = new EventTarget();
+  const button = new ElementStub();
+  const guidance = new ElementStub();
+  createInstallController({
+    windowApi,
+    navigatorApi: {},
+    matchMediaApi: () => ({ matches: false }),
+    button,
+    guidance,
+  });
+
+  const promptEvent = new Event("beforeinstallprompt", { cancelable: true });
+  Object.defineProperties(promptEvent, {
+    prompt: { value: async () => {} },
+    userChoice: { value: Promise.resolve({ outcome: "dismissed" }) },
+  });
+  windowApi.dispatchEvent(promptEvent);
+  button.dispatchEvent(new Event("click"));
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(button.hidden, false);
+  assert.equal(button.disabled, false);
+  assert.equal(guidance.hidden, false);
+  assert.match(guidance.textContent, /not completed.*browser menu/i);
+});
 
 test("registration resolves the worker relative to root and GitHub project paths", async () => {
   assert.equal(
