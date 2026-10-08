@@ -333,4 +333,4 @@ this release; Mike will perform the non-blocking Android follow-up. See
 
 Puzzle content is authored in the client's Google Sheet and exported to
 `client-handoff/questions.json`. The reproducible importer creates the fixed
-daily schedule in `data/puzzles.json`; it does not invent puzzle content.
+daily schedule in `data/puzzles.json`; it does not invent puzzle content..
