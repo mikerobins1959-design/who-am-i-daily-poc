@@ -60,7 +60,7 @@ test("information copy preserves the approved rules, contact, and legal text", a
   const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 
   assert.match(html, /<dialog id="info-dialog"[^>]*aria-labelledby="info-title"/);
-  assert.match(html, /mailto:manofempire@yahoo\.co\.uk/);
+  assert.match(html, /mailto:mickrobins@mac\.com/);
   assert.match(text, /Reveal Multiple Choices/);
   assert.match(text, /selected option must exactly match the puzzle answer/);
   assert.match(text, /There is no timer before or after you reveal the choices/);

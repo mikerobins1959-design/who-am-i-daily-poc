@@ -5,6 +5,7 @@ export const PUZZLES_PATH = "./data/puzzles.json";
 export const SHELL_PATHS = Object.freeze([
   "./",
   "./index.html",
+  "./privacy.html",
   "./manifest.webmanifest",
   "./css/styles.css",
   "./assets/angela-final.png",
