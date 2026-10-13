@@ -299,3 +299,9 @@ given a width, so they always rendered empty.
 
 - Builder evidence: production build passed (20 files). Initial focused checks found a stale support-address expectation, corrected in `tests/info.test.mjs`. Initial sandbox loopback restriction was resolved by the authorised rerun below.
 - Authorised loopback rerun: `./quality verify changed` passed all 86 tests. Public content correction removes any suggestion that individual answer selections are retained, clarifies external social links and avoids treating a disused browser profile as deletion.
+
+## Privacy notice confirmation update — 2026-10-14
+
+- Acceptance: the amended Yahoo address replaces the previous address throughout support and privacy contacts; the notice states approved legitimate interests for secure delivery/support responses, separately managed email and no Netlify Analytics/Forms/tracking.
+- The private review checklist removes resolved confirmations and retains actual provider retention, email arrangements, customer transfer arrangements and final copy approval. Optional operating recommendations are distinguished from release content decisions.
+- Focused privacy, information and production tests passed (7 tests); production build passed (20 files); `git diff --check` passed. No game-state code or layout styles changed.

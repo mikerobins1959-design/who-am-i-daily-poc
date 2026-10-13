@@ -22,6 +22,9 @@ test("privacy destination is available publicly and offline, review decisions re
   assert.equal(resolvePublicPath("/client-handoff/privacy-review.md", root.pathname), null);
   assert.equal(PRODUCTION_FILES.includes("client-handoff/privacy-review.md"), false);
   assert.doesNotMatch(privacy, /<script\b/);
-  assert.match(index, /mailto:mickrobins@mac\.com/);
-  assert.doesNotMatch(index, /manofempire@yahoo/);
+  assert.match(index, /mailto:manofempire@yahoo\.co\.uk/);
+  assert.doesNotMatch(index, /mickrobins@mac/);
+  assert.equal((privacy.match(/mailto:manofempire@yahoo\.co\.uk/g) ?? []).length, 2);
+  assert.doesNotMatch(privacy, /mickrobins@mac/);
+  assert.match(privacy, /legitimate interests in securely delivering the game and responding to support enquiries/);
 });
