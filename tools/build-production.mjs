@@ -7,6 +7,7 @@ import { loadAndValidatePuzzles } from "./validate-puzzles.mjs";
 
 export const PRODUCTION_FILES = Object.freeze([
   "index.html",
+  "privacy.html",
   "manifest.webmanifest",
   "service-worker.js",
   "css/styles.css",

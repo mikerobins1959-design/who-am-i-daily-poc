@@ -289,3 +289,19 @@ given a width, so they always rendered empty.
 - Cross-browser coverage is limited to the browser used in the walkthrough above.
 - Tests take the date as an argument rather than reading the machine clock, and
   operate on explicit state objects rather than a real `localStorage`.
+
+## Privacy notice draft — 2026-10-13
+
+- Acceptance: game footer links to an accessible dedicated privacy page, identifies the company and uses the supplied support email; browser game state is preserved during navigation.
+- `tests/privacy.test.mjs` checks public/offline/production inclusion, private review exclusion, support address, accessible document landmarks and absence of game scripts on the notice. Existing production, dev-server and service-worker checks cover packaging/serving/cache behavior.
+- Public content is a client-review draft; lawful bases, provider retention and international-transfer facts require confirmation in `client-handoff/privacy-review.md` before release.
+- In-app browser: desktop and effective 375px notice layout fit without horizontal overflow; mobile footer wraps clearly; links and keyboard focus work. Stopping the local server and reloading confirmed cached notice availability and navigation back to the game. Final updated wording was inspected on a fresh local origin.
+
+- Builder evidence: production build passed (20 files). Initial focused checks found a stale support-address expectation, corrected in `tests/info.test.mjs`. Initial sandbox loopback restriction was resolved by the authorised rerun below.
+- Authorised loopback rerun: `./quality verify changed` passed all 86 tests. Public content correction removes any suggestion that individual answer selections are retained, clarifies external social links and avoids treating a disused browser profile as deletion.
+
+## Privacy notice confirmation update — 2026-10-14
+
+- Acceptance: the amended Yahoo address replaces the previous address throughout support and privacy contacts; the notice states approved legitimate interests for secure delivery/support responses, separately managed email and no Netlify Analytics/Forms/tracking.
+- The private review checklist removes resolved confirmations and retains actual provider retention, email arrangements, customer transfer arrangements and final copy approval. Optional operating recommendations are distinguished from release content decisions.
+- Focused privacy, information and production tests passed (7 tests); production build passed (20 files); `git diff --check` passed. No game-state code or layout styles changed.

@@ -5,7 +5,7 @@ import { extname, isAbsolute, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const DEFAULTS = { host: "127.0.0.1", port: 8000 };
-const PUBLIC_FILES = new Set(["/index.html", "/manifest.webmanifest", "/service-worker.js"]);
+const PUBLIC_FILES = new Set(["/index.html", "/privacy.html", "/manifest.webmanifest", "/service-worker.js"]);
 const PUBLIC_DIRECTORIES = ["/assets/", "/css/", "/data/", "/js/", "/tools/preview/"];
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
