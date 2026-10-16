@@ -195,3 +195,4 @@ client-provided example.
 Puzzle content is authored in the client's Google Sheet and exported to
 `data/puzzles.json`. This project consumes that file; it does not generate,
 repeat, or invent puzzle content.
+*Privacy notice approved.).
