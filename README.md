@@ -334,3 +334,19 @@ this release; Mike will perform the non-blocking Android follow-up. See
 Puzzle content is authored in the client's Google Sheet and exported to
 `client-handoff/questions.json`. The reproducible importer creates the fixed
 daily schedule in `data/puzzles.json`; it does not invent puzzle content..
+
+
+### Updating company details
+
+Company details are static HTML, not a dashboard or runtime configuration setting.
+You can edit them using GitHub’s file editor on the production branch,
+`codex/milestone-3`:
+
+- `index.html`: update the registered office in the footer.
+- `privacy.html`: update both “Who is responsible” and the footer, then update
+  the notice’s “Last updated” date.
+
+Keep the company name and number consistent across both pages. Commit the edits
+under your own GitHub account and check that Netlify publishes successfully.
+Changes appear on the live site after publication; installed apps may need to
+close and reopen to load the refreshed offline resources.

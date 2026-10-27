@@ -4,7 +4,7 @@ Updated 14 October 2026. This remains a client-review draft, not a legal certifi
 
 ## Confirmed facts and instructions
 
-- KRELL ENTERPRISES LTD, company 17299326, is registered in England and Wales. Its registered office matches the public notice and Companies House.
+- KRELL ENTERPRISES LTD, company 17299326, is registered in England and Wales. The public notice now uses the registered office supplied by Mike on 27 October 2026: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ. This address update has not been independently rechecked against Companies House.
 - Mike confirmed Netlify hosting, separately managed email, and no Netlify Analytics, Forms or tracking.
 - Mike confirmed the amended contact address `manofempire@yahoo.co.uk` for support and privacy requests. This supersedes the earlier `mickrobins@mac.com` instruction.
 - Mike approved legitimate interests for secure delivery and responding to support enquiries. The notice now states these purposes and mentions legal obligations for handling privacy requests where applicable. This approval is not a completed legal assessment or a blanket compliance claim.
