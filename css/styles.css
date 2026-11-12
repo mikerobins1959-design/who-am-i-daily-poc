@@ -337,7 +337,7 @@ main {
 .game-identity h1 {
   color: #e6fcff;
   text-shadow: 0 0 24px rgb(115 224 235 / 28%);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 /* Focus is moved here only to announce the game after the intro. */
