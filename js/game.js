@@ -123,6 +123,11 @@ export function createDefaultStats() {
   };
 }
 
+export function getTotalPoints(stats) {
+  const distribution = stats.scoreDistribution;
+  return 3 * distribution["3"] + 2 * distribution["2"] + distribution["1"];
+}
+
 export function createGameState(dateKey, stats = createDefaultStats(), lastCompletedDate = null) {
   if (!isValidDateKey(dateKey)) {
     throw new TypeError("A valid YYYY-MM-DD date key is required.");

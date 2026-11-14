@@ -11,6 +11,7 @@ import {
   findPuzzleForDate,
   formatDisplayDate,
   getLocalDateKey,
+  getTotalPoints,
   isGameComplete,
   parseStoredState,
   prepareStateForDate,
@@ -49,6 +50,7 @@ const elements = {
   manualSharePanel: document.querySelector("#manual-share-panel"),
   manualShareText: document.querySelector("#manual-share-text"),
   statsPanel: document.querySelector("#stats-panel"),
+  statTotalPoints: document.querySelector("#stat-total-points"),
   statPlayed: document.querySelector("#stat-played"),
   statWins: document.querySelector("#stat-wins"),
   statCurrentStreak: document.querySelector("#stat-current-streak"),
@@ -474,6 +476,7 @@ function showView(view) {
 }
 
 function renderStats(stats) {
+  elements.statTotalPoints.textContent = String(getTotalPoints(stats));
   elements.statPlayed.textContent = String(stats.played);
   elements.statWins.textContent = String(stats.wins);
   elements.statCurrentStreak.textContent = String(stats.currentStreak);

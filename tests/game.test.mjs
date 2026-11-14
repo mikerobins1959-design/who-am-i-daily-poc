@@ -9,6 +9,7 @@ import {
   findPuzzleForDate,
   formatDisplayDate,
   getLocalDateKey,
+  getTotalPoints,
   parseStoredState,
   prepareStateForDate,
   revealOptions,
@@ -72,6 +73,37 @@ test("daily option order is stable, varied, complete, and does not mutate puzzle
   assert.equal(firstOrder.length, originalOptions.length);
   assert.deepEqual(puzzle.options, originalOptions);
   assert.notStrictEqual(firstOrder, puzzle.options);
+});
+
+test("total points derives from existing saved history without changing storage", () => {
+  assert.equal(getTotalPoints(createGameState(puzzle.date).stats), 0);
+  const saved = createGameState(puzzle.date, {
+    played: 32,
+    wins: 27,
+    currentStreak: 0,
+    maxStreak: 4,
+    scoreDistribution: { "3": 15, "2": 6, "1": 6, "0": 5 },
+  });
+  const serialized = JSON.stringify(saved);
+  const { state: restored } = parseStoredState(serialized);
+  assert.ok(restored);
+  assert.equal(getTotalPoints(restored.stats), 63);
+  assert.equal(JSON.stringify(restored), serialized);
+
+  for (const [advances, guess, expectedTotal] of [
+    [0, puzzle.answer, 66],
+    [1, puzzle.answer, 65],
+    [2, puzzle.answer, 64],
+    [0, "Grace Hopper", 63],
+  ]) {
+    let state = restored;
+    for (let index = 0; index < advances; index += 1) state = advanceClue(state);
+    const result = submitGuess(state, puzzle, guess);
+    const { state: reloaded } = parseStoredState(JSON.stringify(result));
+    assert.equal(getTotalPoints(result.stats), expectedTotal);
+    assert.equal(getTotalPoints(reloaded.stats), expectedTotal);
+    assert.equal(getTotalPoints(submitGuess(reloaded, puzzle, guess).stats), expectedTotal);
+  }
 });
 
 for (const [advances, expectedScore] of [

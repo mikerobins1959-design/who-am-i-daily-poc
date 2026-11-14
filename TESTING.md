@@ -17,6 +17,7 @@ and preview helpers without requiring browser automation:
 | Area | Covered |
 | --- | --- |
 | Scoring | Correct answer at clue 1, 2, 3 scores 3, 2, 1 |
+| Total points | Existing 32-game distribution yields 63 without changing saved state; empty history yields 0; wins, losses, reload and replay retain the expected cumulative sum |
 | Sudden death | Wrong answer at every clue ends the day at 0 |
 | Answer matching | Comparison is exact; `"ada lovelace"` loses |
 | Date presentation | Valid local date keys display as UK `DD/MM/YYYY`; matching and storage remain `YYYY-MM-DD` |
@@ -305,3 +306,13 @@ given a width, so they always rendered empty.
 - Acceptance: the amended Yahoo address replaces the previous address throughout support and privacy contacts; the notice states approved legitimate interests for secure delivery/support responses, separately managed email and no Netlify Analytics/Forms/tracking.
 - The private review checklist removes resolved confirmations and retains actual provider retention, email arrangements, customer transfer arrangements and final copy approval. Optional operating recommendations are distinguished from release content decisions.
 - Focused privacy, information and production tests passed (7 tests); production build passed (20 files); `git diff --check` passed. No game-state code or layout styles changed.
+
+
+### Cumulative points verification — 14 November 2026
+
+In an isolated local browser origin, a saved 32-game distribution displayed 63
+Total points. A Clue 1 win increased the total to 66; refreshing retained 66 and
+the completed-game lock. The statistics panel was visually checked at 375px
+mobile and 1280px desktop widths. Automated coverage also checks empty history,
+all three win scores, losses and replay protection. All 87 tests passed and the
+production build completed. Live player data was not modified.

@@ -617,6 +617,10 @@ main {
   line-height: 1;
 }
 
+.stats-grid .stat-total-points {
+  grid-column: 1 / -1;
+}
+
 .stats-grid dt {
   order: 2;
   margin-block-start: 0.4rem;
