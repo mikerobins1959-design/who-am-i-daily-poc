@@ -115,7 +115,9 @@ export async function installAppShell({
 }) {
   const names = getCacheNames(scopeUrl, version);
   const shellCache = await cacheStorage.open(names.shell);
-  await shellCache.addAll(SHELL_PATHS.map((path) => getScopedUrl(path, scopeUrl)));
+  await shellCache.addAll(SHELL_PATHS.map((path) => new Request(getScopedUrl(path, scopeUrl), {
+    cache: "reload",
+  })));
 
   const puzzleUrl = getScopedUrl(PUZZLES_PATH, scopeUrl);
   try {
@@ -167,6 +169,12 @@ export function setupServiceWorker(worker) {
   const scopeUrl = worker.registration.scope;
   const puzzleUrl = new URL(PUZZLES_PATH, scopeUrl);
   const shellUrls = new Set(SHELL_PATHS.map((path) => getScopedUrl(path, scopeUrl)));
+
+  worker.addEventListener("message", (event) => {
+    // Activation is opt-in. Installing a release alone never replaces a
+    // running game's worker, and other open tabs never receive a forced reload.
+    if (event.data?.type === "SKIP_WAITING") event.waitUntil(worker.skipWaiting());
+  });
 
   worker.addEventListener("install", (event) => {
     event.waitUntil(

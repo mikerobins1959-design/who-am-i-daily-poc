@@ -79,6 +79,20 @@ a domain root or a project subpath such as `/who-am-i-daily-poc/`.
 - If the network response is unavailable or invalid, the last validated cached
   puzzle data is used. A player cannot replay a completed daily game.
 
+### Receiving app updates
+
+A newly downloaded release displays an **Update now / Later** notice. Updating
+reloads only the consenting tab and keeps Local Storage progress and statistics.
+The game blocks that reload if its latest progress could not be saved. Checks run
+when players return to the page or reconnect, at most once per minute. A first
+installation does not prompt or reload the game.
+
+Players on a release predating this notice may need to open the game online,
+then close every game tab and standalone window and reopen it once the new
+release has downloaded. Do not advise uninstalling or clearing website data:
+that can remove their locally stored statistics. The new notice becomes
+available after this initial transition. Browser update timing varies.
+
 For each release, confirm the generated service worker fingerprint changes when
 runtime assets change, run the release checks, serve `dist/` at both `/` and a
 project subpath, and verify install, reload, same-day progress, offline reload,

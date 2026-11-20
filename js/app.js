@@ -23,6 +23,7 @@ import {
 import { reconcileActionState } from "./session.js";
 import { copyShareResult, createSharePayload, deliverShare } from "./share.js";
 import { runDailyIntro } from "./intro.js";
+import { createUpdateSafetyGuard } from "./pwa.js";
 
 const elements = {
   appStatus: document.querySelector("#app-status"),
@@ -81,6 +82,8 @@ let activeDateKey = "";
 let storageWarning = "";
 let initialized = false;
 let hasUnsavedChanges = false;
+
+createUpdateSafetyGuard({ hasUnsavedChanges: () => hasUnsavedChanges });
 
 elements.showOptionsButton.addEventListener("click", () => {
   if (!prepareForAction()) return;
@@ -197,6 +200,7 @@ function showToday() {
         elements.skipLink,
         elements.siteHeader,
         elements.appStatus,
+        document.querySelector("#update-banner"),
         elements.loadingState,
         elements.gameLayout,
         elements.storageWarning,

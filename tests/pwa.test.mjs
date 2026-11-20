@@ -13,10 +13,13 @@ import {
   getShellResponse,
   installAppShell,
   isExcludedRequest,
+  setupServiceWorker,
   shouldHandleRequest,
 } from "../service-worker.js";
 import {
   createInstallController,
+  createUpdateController,
+  createUpdateSafetyGuard,
   getServiceWorkerUrl,
   isStandalone,
   registerPwa,
@@ -49,7 +52,7 @@ class MemoryCache {
 
   async addAll(urls) {
     this.added.push(...urls);
-    await Promise.all(urls.map((url) => this.put(url, new Response(`shell:${url}`))));
+    await Promise.all(urls.map((url) => this.put(url, new Response(`shell:${toKey(url)}`))));
   }
 
   async put(input, response) {
@@ -309,9 +312,10 @@ test("install precaches only scoped shell paths and seeds only validated puzzle 
 
   const names = getCacheNames(scopeUrl);
   const shell = await cacheStorage.open(names.shell);
-  assert.deepEqual(shell.added, SHELL_PATHS.map((path) => getScopedUrl(path, scopeUrl)));
-  assert.equal(shell.added.some((url) => url.includes("tools/preview")), false);
-  assert.equal(shell.added.some((url) => new URL(url).searchParams.has("review")), false);
+  assert.deepEqual(shell.added.map((request) => request.url), SHELL_PATHS.map((path) => getScopedUrl(path, scopeUrl)));
+  assert.ok(shell.added.every((request) => request.cache === "reload"));
+  assert.equal(shell.added.some((request) => request.url.includes("tools/preview")), false);
+  assert.equal(shell.added.some((request) => new URL(request.url).searchParams.has("review")), false);
 
   const data = await cacheStorage.open(names.data);
   const cached = await data.match(getScopedUrl(PUZZLES_PATH, scopeUrl));
@@ -447,8 +451,231 @@ test("activation deletes obsolete caches only for the current scope", async () =
   ]));
 });
 
-test("the worker leaves updates waiting instead of forcing a running game to reload", async () => {
-  const source = await readFile(new URL("../service-worker.js", import.meta.url), "utf8");
-  assert.doesNotMatch(source, /skipWaiting\s*\(/);
-  assert.doesNotMatch(source, /clients\.claim\s*\(/);
+function updateFixture({ controlled = true, waiting = true, ...options } = {}) {
+  const windowApi = new EventTarget();
+  const documentApi = new EventTarget();
+  documentApi.hidden = false;
+  documentApi.querySelector = () => null;
+  const navigatorApi = { onLine: true };
+  const serviceWorker = new EventTarget();
+  serviceWorker.controller = controlled ? { old: true } : null;
+  const newWorker = new EventTarget();
+  const messages = [];
+  newWorker.postMessage = (message) => messages.push(message);
+  const registration = new EventTarget();
+  registration.waiting = waiting ? newWorker : null;
+  let checks = 0;
+  registration.update = async () => { checks += 1; };
+  const banner = new ElementStub();
+  const message = new ElementStub();
+  const updateButton = new ElementStub();
+  const dismissButton = new ElementStub();
+  let reloads = 0;
+  let timestamp = 0;
+  const timers = new Map();
+  const controller = createUpdateController({
+    registration, serviceWorker, navigatorApi, windowApi, documentApi,
+    banner, message, updateButton, dismissButton,
+    reload: () => { reloads += 1; },
+    now: () => timestamp,
+    setTimeoutApi: (callback) => { timers.set(callback, callback); return callback; },
+    clearTimeoutApi: (id) => timers.delete(id),
+    ...options,
+  });
+  return {
+    windowApi, documentApi, navigatorApi, registration, serviceWorker,
+    newWorker, messages, banner, message, updateButton, dismissButton, controller,
+    get reloads() { return reloads; },
+    get checks() { return checks; },
+    setTime(value) { timestamp = value; },
+    expireActivation() { for (const callback of [...timers.values()]) callback(); timers.clear(); },
+    activate(worker = newWorker) {
+      registration.waiting = null;
+      serviceWorker.controller = worker;
+      serviceWorker.dispatchEvent(new Event("controllerchange"));
+    },
+    click() { updateButton.dispatchEvent(new Event("click")); },
+    install() {
+      registration.installing = newWorker;
+      registration.dispatchEvent(new Event("updatefound"));
+      registration.waiting = newWorker;
+      newWorker.state = "installed";
+      newWorker.dispatchEvent(new Event("statechange"));
+    },
+  };
+}
+
+test("waiting updates require consent and only the accepting tab reloads once", () => {
+  const accepting = updateFixture();
+  const otherTab = updateFixture();
+  assert.equal(accepting.banner.hidden, false);
+  assert.match(accepting.message.textContent, /new version.*saved progress/);
+  assert.deepEqual(accepting.messages, []);
+  accepting.click();
+  accepting.click();
+  assert.deepEqual(accepting.messages, [{ type: "SKIP_WAITING" }]);
+  assert.equal(accepting.updateButton.disabled, true);
+  accepting.activate();
+  accepting.activate();
+  otherTab.activate();
+  assert.equal(accepting.reloads, 1);
+  assert.equal(otherTab.reloads, 0);
+  otherTab.click();
+  assert.equal(otherTab.reloads, 1, "the other tab may explicitly accept an already active release");
+});
+
+test("updatefound observes installed releases while first install stays silent", () => {
+  const update = updateFixture({ waiting: false });
+  assert.equal(update.banner.hidden, true);
+  update.install();
+  assert.equal(update.banner.hidden, false);
+  assert.deepEqual(update.messages, []);
+
+  const first = updateFixture({ controlled: false, waiting: false });
+  first.install();
+  first.click();
+  first.activate();
+  assert.equal(first.banner.hidden, true);
+  assert.deepEqual(first.messages, []);
+  assert.equal(first.reloads, 0);
+});
+
+test("an already installing worker is observed and Later dismisses only that release", async () => {
+  const installing = new EventTarget();
+  installing.postMessage = () => {};
+  const registration = new EventTarget();
+  registration.installing = installing;
+  registration.update = async () => {};
+  const fixture = updateFixture({ waiting: false, registration });
+  registration.waiting = installing;
+  installing.state = "installed";
+  installing.dispatchEvent(new Event("statechange"));
+  assert.equal(fixture.banner.hidden, false);
+  fixture.dismissButton.dispatchEvent(new Event("click"));
+  await fixture.controller.checkForUpdate();
+  assert.equal(fixture.banner.hidden, true);
+  const newer = new EventTarget();
+  registration.installing = newer;
+  registration.dispatchEvent(new Event("updatefound"));
+  registration.waiting = newer;
+  newer.state = "installed";
+  newer.dispatchEvent(new Event("statechange"));
+  assert.equal(fixture.banner.hidden, false);
+});
+
+test("unsaved game state blocks activation and is checked again immediately before reload", () => {
+  const fixture = updateFixture();
+  let unsaved = true;
+  const releaseGuard = createUpdateSafetyGuard({
+    windowApi: fixture.windowApi,
+    hasUnsavedChanges: () => unsaved,
+  });
+  fixture.click();
+  assert.deepEqual(fixture.messages, []);
+  assert.match(fixture.message.textContent, /could not be saved/);
+  unsaved = false;
+  fixture.click();
+  assert.equal(fixture.messages.length, 1);
+  unsaved = true;
+  fixture.activate();
+  assert.equal(fixture.reloads, 0);
+  assert.equal(fixture.updateButton.disabled, false);
+  assert.match(fixture.message.textContent, /could not be saved/);
+  unsaved = false;
+  fixture.click();
+  assert.equal(fixture.reloads, 1);
+  releaseGuard();
+});
+
+test("postMessage failure and activation timeout allow retry without late forced reloads", () => {
+  const fixture = updateFixture();
+  fixture.newWorker.postMessage = () => { throw new Error("worker gone"); };
+  fixture.click();
+  assert.equal(fixture.updateButton.disabled, false);
+  assert.match(fixture.message.textContent, /could not start/);
+  fixture.newWorker.postMessage = (message) => fixture.messages.push(message);
+  fixture.click();
+  fixture.expireActivation();
+  assert.equal(fixture.updateButton.disabled, false);
+  assert.match(fixture.message.textContent, /not finished/);
+  fixture.activate();
+  assert.equal(fixture.reloads, 0);
+  fixture.click();
+  assert.equal(fixture.reloads, 1);
+});
+
+test("an unrelated controllerchange cannot spend consent for a different release", () => {
+  const fixture = updateFixture();
+  fixture.click();
+  fixture.activate({ differentWorker: true });
+  assert.equal(fixture.reloads, 0);
+  fixture.controller.dispose();
+});
+
+test("returning focus, visibility, and online checks are throttled and failures recover quietly", async () => {
+  const fixture = updateFixture({ waiting: false });
+  fixture.registration.update = async () => { throw new TypeError("offline"); };
+  await fixture.controller.checkForUpdate();
+  fixture.setTime(60_000);
+  fixture.registration.update = async () => { fixture.messages.push("check"); };
+  fixture.documentApi.hidden = true;
+  fixture.windowApi.dispatchEvent(new Event("focus"));
+  fixture.documentApi.hidden = false;
+  fixture.navigatorApi.onLine = false;
+  fixture.documentApi.dispatchEvent(new Event("visibilitychange"));
+  assert.deepEqual(fixture.messages, []);
+  fixture.navigatorApi.onLine = true;
+  fixture.windowApi.dispatchEvent(new Event("online"));
+  fixture.windowApi.dispatchEvent(new Event("focus"));
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(fixture.messages, ["check"]);
+  fixture.setTime(120_000);
+  fixture.documentApi.dispatchEvent(new Event("visibilitychange"));
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(fixture.messages, ["check", "check"]);
+  fixture.controller.dispose();
+  fixture.setTime(180_000);
+  fixture.windowApi.dispatchEvent(new Event("focus"));
+  assert.deepEqual(fixture.messages, ["check", "check"]);
+  assert.equal(fixture.reloads, 0);
+});
+
+test("the worker activates only on the explicit update message and never claims clients", async () => {
+  const listeners = new Map();
+  let activations = 0;
+  let claims = 0;
+  const worker = {
+    registration: { scope: "https://example.test/game/" },
+    caches: new MemoryCacheStorage(),
+    fetch: async () => jsonResponse(validPuzzles),
+    addEventListener: (type, callback) => listeners.set(type, callback),
+    skipWaiting: async () => { activations += 1; },
+    clients: { claim: async () => { claims += 1; } },
+  };
+  setupServiceWorker(worker);
+  let pending;
+  const event = { waitUntil: (promise) => { pending = promise; } };
+  listeners.get("install")(event);
+  await pending;
+  listeners.get("activate")(event);
+  await pending;
+  assert.equal(activations, 0);
+  assert.equal(claims, 0);
+  listeners.get("message")({ data: { type: "OTHER" }, ...event });
+  assert.equal(activations, 0);
+  listeners.get("message")({ data: { type: "SKIP_WAITING" }, ...event });
+  await pending;
+  assert.equal(activations, 1);
+  assert.equal(claims, 0);
+});
+
+test("the update banner is labelled and the game connects its unsaved-state guard", async () => {
+  const [html, app] = await Promise.all([
+    readFile(new URL("../index.html", import.meta.url), "utf8"),
+    readFile(new URL("../js/app.js", import.meta.url), "utf8"),
+  ]);
+  assert.match(html, /id="update-banner"[^>]*aria-label="App update"[^>]*hidden/);
+  assert.match(html, /id="update-message"[^>]*role="status"[^>]*aria-live="polite"/);
+  assert.match(html, /id="update-button"[^>]*type="button">Update now/);
+  assert.match(app, /createUpdateSafetyGuard\(\{ hasUnsavedChanges: \(\) => hasUnsavedChanges \}\)/);
 });

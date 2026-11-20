@@ -213,6 +213,14 @@
     <main id="main-content" class="page-shell">
       <p id="app-status" class="visually-hidden" aria-live="polite"></p>
 
+      <aside id="update-banner" class="update-banner" aria-label="App update" hidden>
+        <p id="update-message" role="status" aria-live="polite" aria-atomic="true"></p>
+        <div class="update-actions">
+          <button id="update-button" class="footer-info-button" type="button">Update now</button>
+          <button id="update-dismiss" class="footer-info-button" type="button">Later</button>
+        </div>
+      </aside>
+
       <section id="loading-state" class="state-card loading-state" aria-labelledby="loading-title">
         <div class="loading-mark" aria-hidden="true"></div>
         <div>

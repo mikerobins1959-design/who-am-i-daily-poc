@@ -316,3 +316,24 @@ the completed-game lock. The statistics panel was visually checked at 375px
 mobile and 1280px desktop widths. Automated coverage also checks empty history,
 all three win scores, losses and replay protection. All 87 tests passed and the
 production build completed. Live player data was not modified.
+
+
+### Safe PWA update verification — 20 November 2026
+
+- All 95 automated tests pass; production build passes. Lifecycle coverage includes
+  waiting/new workers, silent first install, consent-only single reload, a second
+  tab, unsaved-state veto, activation timeout, offline errors and cache revalidation.
+- Isolated browser origin, production builds: old release waited while open;
+  closing its game tab and reopening adopted the new release with 63 points,
+  Clue 2 and visible choices intact, without clearing storage.
+- A subsequent release displayed the notice. Update now reloaded only the
+  consenting tab; another tab remained on its existing document. Later dismissed
+  its notice without interrupting play.
+- A Clue 2 win raised the total from 63 to 65. Another update retained the
+  completed result, 33 plays, 28 wins and replay lock. Reloading while all app
+  server requests returned 503 retained the cached game and completed statistics.
+- Desktop notice visually checked; narrow-screen wrapping reviewed in CSS.
+  The browser viewport override did not take effect, so this run does not claim
+  a fresh mobile visual check or native iOS/Android update validation.
+- Independent scoped code review found no blocking defects. Live player storage
+  was not accessed; publication and live verification remain outstanding.

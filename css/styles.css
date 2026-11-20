@@ -691,6 +691,34 @@ main {
   display: block;
 }
 
+.update-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+  margin-block-end: 1.25rem;
+  padding-block-end: 1rem;
+  border-bottom: 1px solid var(--line-strong);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.update-banner p {
+  flex: 1 1 22rem;
+  margin: 0;
+}
+
+.update-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.update-actions button {
+  min-height: 2.75rem;
+}
+
 .ad-slot {
   min-height: 5.5rem;
   display: grid;
